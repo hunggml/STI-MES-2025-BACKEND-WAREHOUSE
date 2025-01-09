@@ -143,7 +143,7 @@ const model = (constructor = {
         {
             let array_where = [];
             request.where.map(function(v){
-                if(v.value != null && v.value != '' && v.value)
+                if(v.value != null && v.value != '' && v.value || v.value === 0)
                 {
                     if(typeof(v.value) != 'object')
                     {

@@ -5,7 +5,7 @@ const apps = model({
     table: 'master_bom',
     fillable: [
         'product_id',
-        'semi_product',
+        'semi_product_id',
         'quantity_use',
         'user_created',
         'time_created',

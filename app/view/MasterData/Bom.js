@@ -6,7 +6,7 @@ const apps = model({
     fillable: [
         'id',
         'product_id',
-        'semi_product',
+        'semi_product_id',
         'quantity_use',
         'user_created',
         'user_created_id',
@@ -18,6 +18,7 @@ const apps = model({
         'product_symbols',
         'semi_product_name',
         'semi_product_symbols',
+        'semi_product_type',
         'isdelete'
     ],
     timestamps: true,

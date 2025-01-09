@@ -79,6 +79,7 @@ const SettingProduct = async (req, res) => {
         await CheckToken.checkToken(req,res);
         let request = req.body;
         let user_id = req.user;
+        console.log(request);
         let time = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
         {
@@ -102,6 +103,7 @@ const SettingProduct = async (req, res) => {
                     stock_max   : request.stock_max,
                     price       : request.price,
                     note        : request.note,
+                    type        : request.type,
                     user_updated: user_id,
                     time_updated: time,
                 };
@@ -160,6 +162,7 @@ const SettingProduct = async (req, res) => {
                         stock_max   : request.stock_max,
                         price       : request.price,
                         note        : request.note,
+                        type        : request.type,
                         user_created: user_id,
                         user_updated: user_id,
                         time_created: time,
@@ -282,6 +285,11 @@ const GetDataBom = async ( req,res ) => {
     try {
         await CheckToken.checkToken(req,res);
 
+        let page        = req.page;
+        let limit_page  = 10;
+
+        const offset = (page - 1) * limit_page;
+        
         const whereConditions = [
             {
                 key: "product_id",
@@ -294,9 +302,21 @@ const GetDataBom = async ( req,res ) => {
             
         ];
 
-        let datas = await BomView.get({
-            where: whereConditions
+        let listBom = await BomView.get({
+            where: whereConditions,
+            orderBy: "time_updated DESC",
+            limit: limit_page,
+            offset,
         });
+
+        const totalRecords = await BomView.count({
+            where: whereConditions,
+        });
+
+        let datas = {
+            listBom,
+            totalRecords
+        }
 
         return res.status(200).send(datas);
         
@@ -312,7 +332,7 @@ const SettingBom = async ( req,res ) => {
 
         let request = req.body;
 
-        // console.log(request);
+        console.log(request);
         let user_id = req.user;
         let time = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
@@ -345,7 +365,7 @@ const SettingBom = async ( req,res ) => {
                     let data_semi = request.semi_products.map(function(v){
                         return { 
                             product_id      : request.product_id,
-                            semi_product    : v.id,
+                            semi_product_id    : v.id,
                             quantity_use    : v.quantity_use,
                             user_created    : user_id,
                             time_created    : time,
@@ -379,7 +399,7 @@ const SettingBom = async ( req,res ) => {
                     let data_semi = request.semi_products.map(function(v){
                         return { 
                                 product_id      : request.product_id,
-                                semi_product    : v.id,
+                                semi_product_id    : v.id,
                                 quantity_use    : v.quantity_use,
                                 user_created    : user_id,
                                 user_updated    : user_id,
