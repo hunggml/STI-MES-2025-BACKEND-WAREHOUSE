@@ -10,6 +10,7 @@ const { cwd } = require('../config/router.js')
     , MasterDataMachine = require('../app/controllers/MasterData/Machine')
     , MasterDataProduct = require('../app/controllers/MasterData/Product')
     , MasterDataWarehouse = require('../app/controllers/MasterData/Warehouse')
+    , MasterDataLocation = require('../app/controllers/MasterData/Location')
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const CheckToken = require('../app/controllers/CheckToken');
@@ -39,7 +40,7 @@ app.post('/setting-product', async (req, res) => { MasterDataProduct.SettingProd
 app.post('/lock-product', async (req, res) => { MasterDataProduct.LockProduct(req, res); });
 app.get('/get-distinct-product', async (req, res) => { MasterDataProduct.SendDistinctProduct(req, res); });
 app.get('/get-data-bom', async (req, res) => { MasterDataProduct.GetDataBom(req, res); });
-app.get('/setting-bom', async (req, res) => { MasterDataProduct.SettingBom(req, res); });
+app.post('/setting-bom', async (req, res) => { MasterDataProduct.SettingBom(req, res); });
 
 
 // master data warehouse 
@@ -48,9 +49,11 @@ app.post('/setting-warehouse', async (req, res) => { MasterDataWarehouse.Setting
 app.post('/lock-warehouse', async (req, res) => { MasterDataWarehouse.LockWarehouse(req, res); });
 app.get('/get-distinct-warehouse', async (req, res) => { MasterDataWarehouse.SendDistinctWarehouse(req, res); });
 
-app.get('/get-data-bom', async (req, res) => { MasterDataWarehouse.GetDataBom(req, res); });
-app.get('/setting-bom', async (req, res) => { MasterDataWarehouse.SettingBom(req, res); });
-
+// master data location 
+app.get('/get-data-locations', async (req, res) => { MasterDataLocation.SendDataLocation(req, res); });
+app.post('/setting-location', async (req, res) => { MasterDataLocation.SettingLocation(req, res); });
+app.post('/lock-location', async (req, res) => { MasterDataLocation.LockLocation(req, res); });
+app.get('/get-distinct-location', async (req, res) => { MasterDataLocation.SendDistinctLocation(req, res); });
 
 
 

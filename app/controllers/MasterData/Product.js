@@ -332,7 +332,6 @@ const SettingBom = async ( req,res ) => {
 
         let request = req.body;
 
-        console.log(request);
         let user_id = req.user;
         let time = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
