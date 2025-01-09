@@ -365,7 +365,7 @@ const SettingBom = async ( req,res ) => {
                     let data_semi = request.semi_products.map(function(v){
                         return { 
                             product_id      : request.product_id,
-                            semi_product_id    : v.id,
+                            semi_product_id    : v.semi_product_id,
                             quantity_use    : v.quantity_use,
                             user_created    : user_id,
                             time_created    : time,
@@ -399,7 +399,7 @@ const SettingBom = async ( req,res ) => {
                     let data_semi = request.semi_products.map(function(v){
                         return { 
                                 product_id      : request.product_id,
-                                semi_product_id    : v.id,
+                                semi_product_id    : v.semi_product_id,
                                 quantity_use    : v.quantity_use,
                                 user_created    : user_id,
                                 user_updated    : user_id,

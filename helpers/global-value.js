@@ -3,3 +3,4 @@
 global.listCustomers = [];
 global.listMachines = [];
 global.listProducts = [];
+global.listWarehouses = [];

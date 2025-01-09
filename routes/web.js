@@ -9,6 +9,7 @@ const { cwd } = require('../config/router.js')
     , MasterDataCustomer = require('../app/controllers/MasterData/Customer')
     , MasterDataMachine = require('../app/controllers/MasterData/Machine')
     , MasterDataProduct = require('../app/controllers/MasterData/Product')
+    , MasterDataWarehouse = require('../app/controllers/MasterData/Warehouse')
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const CheckToken = require('../app/controllers/CheckToken');
@@ -39,6 +40,16 @@ app.post('/lock-product', async (req, res) => { MasterDataProduct.LockProduct(re
 app.get('/get-distinct-product', async (req, res) => { MasterDataProduct.SendDistinctProduct(req, res); });
 app.get('/get-data-bom', async (req, res) => { MasterDataProduct.GetDataBom(req, res); });
 app.get('/setting-bom', async (req, res) => { MasterDataProduct.SettingBom(req, res); });
+
+
+// master data warehouse 
+app.get('/get-data-warehouses', async (req, res) => { MasterDataWarehouse.SendDataWarehouse(req, res); });
+app.post('/setting-warehouse', async (req, res) => { MasterDataWarehouse.SettingWarehouse(req, res); });
+app.post('/lock-warehouse', async (req, res) => { MasterDataWarehouse.LockWarehouse(req, res); });
+app.get('/get-distinct-warehouse', async (req, res) => { MasterDataWarehouse.SendDistinctWarehouse(req, res); });
+
+app.get('/get-data-bom', async (req, res) => { MasterDataWarehouse.GetDataBom(req, res); });
+app.get('/setting-bom', async (req, res) => { MasterDataWarehouse.SettingBom(req, res); });
 
 
 
