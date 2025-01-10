@@ -96,14 +96,14 @@ const SettingProduct = async (req, res) => {
             if(request.id)
             {
                 let data = {
-                    name        : request.name,
-                    symbols     : request.symbols,
-                    unit        : request.unit,
-                    stock_min   : request.stock_min,
-                    stock_max   : request.stock_max,
-                    price       : request.price,
-                    note        : request.note,
-                    type        : request.type,
+                    name        : request.name ?? '',
+                    symbols     : request.symbols ?? '',
+                    unit        : request.unit ?? '',
+                    stock_min   : request.stock_min ?? '',
+                    stock_max   : request.stock_max ?? '',
+                    price       : request.price ?? '',
+                    note        : request.note ?? '',
+                    type        : request.type ?? '',
                     user_updated: user_id,
                     time_updated: time,
                 };
@@ -155,14 +155,14 @@ const SettingProduct = async (req, res) => {
 
                 await ProductModel.insert([
                     { 
-                        name        : request.name,
-                        symbols     : request.symbols,
-                        unit        : request.unit,
-                        stock_min   : request.stock_min,
-                        stock_max   : request.stock_max,
-                        price       : request.price,
-                        note        : request.note,
-                        type        : request.type,
+                        name        : request.name ?? '',
+                        symbols     : request.symbols ?? '',
+                        unit        : request.unit ?? '',
+                        stock_min   : request.stock_min ?? '',
+                        stock_max   : request.stock_max ?? '',
+                        price       : request.price ?? '',
+                        note        : request.note ?? '',
+                        type        : request.type ?? '',
                         user_created: user_id,
                         user_updated: user_id,
                         time_created: time,
@@ -363,9 +363,9 @@ const SettingBom = async ( req,res ) => {
                 {
                     let data_semi = request.semi_products.map(function(v){
                         return { 
-                            product_id      : request.product_id,
-                            semi_product_id    : v.semi_product_id,
-                            quantity_use    : v.quantity_use,
+                            product_id      : request.product_id ?? '',
+                            semi_product_id    : v.semi_product_id ?? '',
+                            quantity_use    : v.quantity_use ?? '',
                             user_created    : user_id,
                             time_created    : time,
                             user_updated    : user_id,
@@ -397,9 +397,9 @@ const SettingBom = async ( req,res ) => {
 
                     let data_semi = request.semi_products.map(function(v){
                         return { 
-                                product_id      : request.product_id,
-                                semi_product_id    : v.semi_product_id,
-                                quantity_use    : v.quantity_use,
+                                product_id      : request.product_id ?? '',
+                                semi_product_id    : v.semi_product_id ?? '',
+                                quantity_use    : v.quantity_use ?? '',
                                 user_created    : user_id,
                                 user_updated    : user_id,
                                 time_created    : time,

@@ -91,9 +91,9 @@ const SettingMachine = async (req, res) => {
             if(request.id)
             {
                 let data = {
-                    name    : request.name,
-                    symbols : request.symbols,
-                    note    : request.note,
+                    name    : request.name ?? '',
+                    symbols : request.symbols ?? '',
+                    note    : request.note ?? '',
                     user_updated: user_id,
                     time_updated: time,
                 };
@@ -156,9 +156,9 @@ const SettingMachine = async (req, res) => {
 
                 await MachineModel.insert([
                     { 
-                        name    : req.body.name,
-                        symbols : req.body.symbols,
-                        note    : req.body.note,
+                        name    : req.body.name ?? '',
+                        symbols : req.body.symbols ?? '',
+                        note    : req.body.note ?? '',
                         user_created: user_id,
                         user_updated: user_id,
                         time_created: time,

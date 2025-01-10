@@ -78,10 +78,11 @@ const SendDataLocation = async (req, res) => {
 }
 
 const SettingLocation = async (req, res) => {
-    try {
+    // try {
         await CheckToken.checkToken(req,res);
         let request = req.body;
         let user_id = req.user;
+        // console.log(request)
         let time    = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
         {
@@ -109,7 +110,7 @@ const SettingLocation = async (req, res) => {
                 where: [
                     {
                         key: "position_x",
-                        value: request.position_x 
+                        value: request.position_x ?? ''
                     }
                 ],
                 orderBy: "time_updated DESC"
@@ -118,16 +119,17 @@ const SettingLocation = async (req, res) => {
                 where: [
                     {
                         key: "position_y",
-                        value: request.position_y 
+                        value: request.position_y ?? ''
                     }
                 ],
                 orderBy: "time_updated DESC"
             });
+
             let check_position_z_location = await LocationView.first({
                 where: [
                     {
                         key: "position_z",
-                        value: request.position_z 
+                        value: request.position_z ?? ''
                     }
                 ],
                 orderBy: "time_updated DESC"
@@ -138,13 +140,13 @@ const SettingLocation = async (req, res) => {
                 let data = {
                     name            : request.name,
                     symbols         : request.symbols,
-                    stock_min       : request.stock_min,
-                    stock_max       : request.stock_max,
+                    stock_min       : request.stock_min ?? 0,
+                    stock_max       : request.stock_max ?? 0,
                     warehouse_id    : request.warehouse_id,
-                    position_x      : request.position_x,
-                    position_y      : request.position_y,
-                    position_z      : request.position_z,
-                    note            : request.note,
+                    position_x      : request.position_x ?? '',
+                    position_y      : request.position_y ?? '',
+                    position_z      : request.position_z ?? '',
+                    note            : request.note ?? '',
                     user_updated    : user_id,
                     time_updated    : time,
                 };
@@ -237,13 +239,13 @@ const SettingLocation = async (req, res) => {
                     { 
                         name            : request.name,
                         symbols         : request.symbols,
-                        stock_min       : request.stock_min,
-                        stock_max       : request.stock_max,
+                        stock_min       : request.stock_min ?? 0,
+                        stock_max       : request.stock_max ?? 0,
                         warehouse_id    : request.warehouse_id,
-                        position_x      : request.position_x,
-                        position_y      : request.position_y,
-                        position_z      : request.position_z,
-                        note            : request.note,
+                        position_x      : request.position_x ?? '',
+                        position_y      : request.position_y ?? '',
+                        position_z      : request.position_z ?? '',
+                        note            : request.note ?? '',
                         user_created    : user_id,
                         user_updated    : user_id,
                         time_created    : time,
@@ -257,10 +259,10 @@ const SettingLocation = async (req, res) => {
                 });
             }
         }
-    }
-    catch(e) {
-        console.log(e);
-    }
+    // }
+    // catch(e) {
+    //     console.log(e);
+    // }
 }
 
 const LockLocation = async (req, res) => {

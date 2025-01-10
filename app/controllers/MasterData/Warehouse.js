@@ -87,6 +87,7 @@ const SettingWarehouse = async (req, res) => {
         await CheckToken.checkToken(req,res);
         let request = req.body;
         let user_id = req.user;
+        // console.log(request);
         let time    = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
         {
@@ -103,9 +104,9 @@ const SettingWarehouse = async (req, res) => {
             if(request.id)
             {
                 let data = {
-                    name    : request.name,
-                    symbols : request.symbols,
-                    note    : request.note,
+                    name    : request.name ?? '',
+                    symbols : request.symbols ?? '',
+                    note    : request.note ?? '',
                     user_updated: user_id,
                     time_updated: time,
                 };
@@ -192,9 +193,9 @@ const SettingWarehouse = async (req, res) => {
 
                 await WarehouseModel.insert([
                     { 
-                        name    : request.name,
-                        symbols : request.symbols,
-                        note    : request.note,
+                        name    : request.name ?? '',
+                        symbols : request.symbols ?? '',
+                        note    : request.note ?? '',
                         user_created: user_id,
                         user_updated: user_id,
                         time_created: time,

@@ -123,13 +123,13 @@ const SettingCustomer = async (req, res) => {
             if(request.id)
             {
                 let data = {
-                    name    : request.name,
-                    symbols : request.symbols,
-                    tax     : request.tax,
-                    address : request.address,
-                    email   : request.email,
-                    note    : request.note,
-                    type    : request.type,
+                    name    : request.name ?? '',
+                    symbols : request.symbols ?? '',
+                    tax     : request.tax ?? '',
+                    address : request.address ?? '',
+                    email   : request.email ?? '',
+                    note    : request.note ?? '',
+                    type    : request.type ?? '',
                     user_updated: user_id,
                     time_updated: time,
                 };
@@ -273,13 +273,13 @@ const SettingCustomer = async (req, res) => {
 
                 await CustomerModel.insert([
                     { 
-                        name    : request.name,
-                        symbols : request.symbols,
-                        tax     : request.tax,
-                        address : request.address,
-                        email   : request.email,
-                        note    : request.note,
-                        type    : request.type,
+                        name    : request.name ?? '',
+                        symbols : request.symbols ?? '',
+                        tax     : request.tax ?? '',
+                        address : request.address ?? '',
+                        email   : request.email ?? '',
+                        note    : request.note ?? '',
+                        type    : request.type ?? '',
                         user_created: user_id,
                         user_updated: user_id,
                         time_created: time,
