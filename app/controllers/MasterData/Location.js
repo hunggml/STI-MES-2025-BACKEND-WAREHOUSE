@@ -32,6 +32,18 @@ const GetDataLocation = async ( req ) => {
         {
             key: "warehouse_id",
             value: req.warehouse_id 
+        },
+        {
+            key: "position_x",
+            value: req.position_x 
+        },
+        {
+            key: "position_y",
+            value: req.position_y 
+        },
+        {
+            key: "position_y",
+            value: req.position_y 
         }
         // {
         //     key: "isdelete",
@@ -143,9 +155,9 @@ const SettingLocation = async (req, res) => {
                     stock_min       : request.stock_min ?? 0,
                     stock_max       : request.stock_max ?? 0,
                     warehouse_id    : request.warehouse_id,
-                    position_x      : request.position_x ?? '',
-                    position_y      : request.position_y ?? '',
-                    position_z      : request.position_z ?? '',
+                    position_x      : request.position_x ?? 0,
+                    position_y      : request.position_y ?? 0,
+                    position_z      : request.position_z ?? 0,
                     note            : request.note ?? '',
                     user_updated    : user_id,
                     time_updated    : time,
@@ -242,9 +254,9 @@ const SettingLocation = async (req, res) => {
                         stock_min       : request.stock_min ?? 0,
                         stock_max       : request.stock_max ?? 0,
                         warehouse_id    : request.warehouse_id,
-                        position_x      : request.position_x ?? '',
-                        position_y      : request.position_y ?? '',
-                        position_z      : request.position_z ?? '',
+                        position_x      : request.position_x ?? 0,
+                        position_y      : request.position_y ?? 0,
+                        position_z      : request.position_z ?? 0,
                         note            : request.note ?? '',
                         user_created    : user_id,
                         user_updated    : user_id,
