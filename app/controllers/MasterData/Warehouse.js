@@ -1,6 +1,7 @@
 'use strict'
 const moment = require('moment');
 const WarehouseModel = require('../../models/MasterData/Warehouse');
+const LocationModel = require('../../models/MasterData/Location');
 const CheckToken = require('../CheckToken');
 const env = require('dotenv').config();
 var db = env.parsed.DB_DATABASE;
@@ -83,10 +84,11 @@ const SendDataWarehouse = async (req, res) => {
 }
 
 const SettingWarehouse = async (req, res) => {
-    try {
+    // try {
         await CheckToken.checkToken(req,res);
         let request = req.body;
         let user_id = req.user;
+        var array_locations = [];
         // console.log(request);
         let time    = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
@@ -104,11 +106,13 @@ const SettingWarehouse = async (req, res) => {
             if(request.id)
             {
                 let data = {
-                    name    : request.name ?? '',
-                    symbols : request.symbols ?? '',
-                    note    : request.note ?? '',
-                    user_updated: user_id,
-                    time_updated: time,
+                    name            : request.name ?? '',
+                    symbols         : request.symbols ?? '',
+                    note            : request.note ?? '',
+                    position_x      : 0,
+                    position_y      : 0,
+                    user_updated    : user_id,
+                    time_updated    : time,
                 };
                 // const check_warehouse = listWarehouses.find(item => item.id == request.id);
                 const check_warehouse = await WarehouseView.first({
@@ -191,28 +195,77 @@ const SettingWarehouse = async (req, res) => {
                     });
                 }
 
+                // add kho
                 await WarehouseModel.insert([
                     { 
-                        name    : request.name ?? '',
-                        symbols : request.symbols ?? '',
-                        note    : request.note ?? '',
-                        user_created: user_id,
-                        user_updated: user_id,
-                        time_created: time,
-                        time_updated: time,
-                        isdelete: 0,
+                        name            : request.name ?? '',
+                        symbols         : request.symbols ?? '',
+                        note            : request.note ?? '',
+                        position_x      : 0,
+                        position_y      : 0,
+                        user_created    : user_id,
+                        user_updated    : user_id,
+                        time_created    : time,
+                        time_updated    : time,
+                        isdelete        : 0,
                     },
                 ]);
+
+                const get_data_warehouse_new = await WarehouseView.first({
+                    where: [
+                        {
+                            key: "symbols",
+                            value: request.symbols 
+                        }
+                    ],
+                    orderBy: "time_updated DESC"
+                });
+
+                let position_x = 1;
+                let position_y = 1;
+                let position_z = 1;
+
+                for(let x = 1 ; x <= request.row; x++)
+                {
+                    for(let y = 1 ; y <= request.column; y++)
+                    {
+                        for(let z = 1 ; z <= request.floor; z++)
+                        {
+                            let array_data = {
+                                name            : `${request.name}-${position_x}-${position_y}-${position_z}`,
+                                symbols         : `${request.symbols}-${position_x}-${position_y}-${position_z}`,
+                                stock_min       : 0,
+                                stock_max       : 0,
+                                note            : '',
+                                warehouse_id    : get_data_warehouse_new.id,
+                                position_x      : position_x,
+                                position_y      : position_y,
+                                position_z      : position_z,
+                                user_created    : user_id,
+                                user_updated    : user_id,
+                                time_created    : time,
+                                time_updated    : time,
+                                isdelete        : 0,
+                            }
+                            array_locations.push(array_data);
+                            position_z += 3;
+                        }
+                        position_y += 3;
+                    }
+                    position_x += 3;
+                }
+                // add location
+                await LocationModel.insert(array_locations);
 
                 return res.status(200).send({
                     message: 22
                 });
             }
         }
-    }
-    catch(e) {
-        console.log(e);
-    }
+    // }
+    // catch(e) {
+    //     console.log(e);
+    // }
 }
 
 const LockWarehouse = async (req, res) => {

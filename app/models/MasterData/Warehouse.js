@@ -7,6 +7,8 @@ const apps = model({
         'name',
         'symbols',
         'note',
+        'position_x',
+        'position_y',
         'user_created',
         'time_created',
         'user_updated',

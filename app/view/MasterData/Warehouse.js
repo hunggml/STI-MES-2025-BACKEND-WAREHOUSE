@@ -8,6 +8,8 @@ const apps = model({
         'name',
         'symbols',
         'note',
+        'position_x',
+        'position_y',
         'user_created',
         'user_created_id',
         'time_created',
