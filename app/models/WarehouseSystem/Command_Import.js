@@ -2,19 +2,15 @@
 
 const { model } = require('../../../services/model');
 const apps = model({
-    table: 'master_warehouse_view',
+    table: 'command_import',
     fillable: [
-        'id',
         'name',
         'symbols',
+        'warehouse_import_id',
         'note',
-        'position_x',
-        'position_z',
         'user_created',
-        'user_created_id',
         'time_created',
         'user_updated',
-        'user_updated_id',
         'time_updated',
         'isdelete'
     ],

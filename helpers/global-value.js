@@ -5,3 +5,5 @@ global.listMachines = [];
 global.listProducts = [];
 global.listWarehouses = [];
 global.listLocations = [];
+global.listCommandImports = [];
+global.listImportDetails = [];

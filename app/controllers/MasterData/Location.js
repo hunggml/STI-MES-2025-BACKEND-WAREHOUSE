@@ -51,12 +51,24 @@ const GetDataLocation = async ( req ) => {
         // }
     ];
 
-    listLocations = await LocationView.get({
-        where: whereConditions,
-        orderBy: "time_updated DESC",
-        limit: limit_page,
-        offset,
-    });
+    if(page == 0)
+    {
+        // console.log(1);
+        listLocations = await LocationView.get({
+            where: whereConditions,
+            orderBy: "time_updated DESC"
+        });
+    }
+    else
+    {
+        // console.log(2);
+        listLocations = await LocationView.get({
+            where: whereConditions,
+            orderBy: "time_updated DESC",
+            limit: limit_page,
+            offset,
+        });
+    }
 
 
     const totalRecords = await LocationView.count({

@@ -84,12 +84,12 @@ const SendDataWarehouse = async (req, res) => {
 }
 
 const SettingWarehouse = async (req, res) => {
-    // try {
+    try {
         await CheckToken.checkToken(req,res);
         let request = req.body;
         let user_id = req.user;
         var array_locations = [];
-        // console.log(request);
+        console.log(request);
         let time    = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
         {
@@ -110,7 +110,7 @@ const SettingWarehouse = async (req, res) => {
                     symbols         : request.symbols ?? '',
                     note            : request.note ?? '',
                     position_x      : 0,
-                    position_y      : 0,
+                    position_z      : 0,
                     user_updated    : user_id,
                     time_updated    : time,
                 };
@@ -202,7 +202,7 @@ const SettingWarehouse = async (req, res) => {
                         symbols         : request.symbols ?? '',
                         note            : request.note ?? '',
                         position_x      : 0,
-                        position_y      : 0,
+                        position_z      : 0,
                         user_created    : user_id,
                         user_updated    : user_id,
                         time_created    : time,
@@ -221,15 +221,15 @@ const SettingWarehouse = async (req, res) => {
                     orderBy: "time_updated DESC"
                 });
 
+                
                 let position_x = 1;
-                let position_y = 1;
-                let position_z = 1;
-
                 for(let x = 1 ; x <= request.row; x++)
                 {
-                    for(let y = 1 ; y <= request.column; y++)
+                    let position_y = 1;
+                    for(let y = 1 ; y <= request.floor; y++)
                     {
-                        for(let z = 1 ; z <= request.floor; z++)
+                        let position_z = 1;
+                        for(let z = 1 ; z <= request.column; z++)
                         {
                             let array_data = {
                                 name            : `${request.name}-${position_x}-${position_y}-${position_z}`,
@@ -262,10 +262,10 @@ const SettingWarehouse = async (req, res) => {
                 });
             }
         }
-    // }
-    // catch(e) {
-    //     console.log(e);
-    // }
+    }
+    catch(e) {
+        console.log(e);
+    }
 }
 
 const LockWarehouse = async (req, res) => {

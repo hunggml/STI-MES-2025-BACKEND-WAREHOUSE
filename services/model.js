@@ -46,7 +46,19 @@ const model = (constructor = {
                     
                     if(typeof(v.value) != 'object')
                     {
-                        array_where.push(`${v.key} = '${v.value}'`);
+                        if(v.key == 'from')
+                        {
+                            console.log(v.value);
+                            array_where.push(`time_created >= '${v.value} 0:0:01'`);
+                        }
+                        else if(v.key == 'to')
+                        {
+                            array_where.push(`time_created <= '${v.value} 23:59:59'`);
+                        }
+                        else
+                        {
+                            array_where.push(`${v.key} = '${v.value}'`);
+                        }
                     }
                     else
                     {
@@ -71,7 +83,7 @@ const model = (constructor = {
         const limit = request.limit ? `LIMIT ${request.limit}` : '';
         const offset = request.offset ? `OFFSET ${request.offset}` : '';
         let sql = `SELECT ${request.select || '*'} FROM ${table} ${whereClause} ${orderBy} ${limit} ${offset}`;
-        // console.log(sql);
+        // console.log(whereClause);
         if (queryLog) console.log(sql);
         return query(sql);
     };
@@ -111,7 +123,7 @@ const model = (constructor = {
     const insert = async (data = []) => {
         if (!data.length) return null;
         const columns = fillable.join(', ');
-        const values = data.map(row => `(${fillable.map(col => `'${row[col]}'`).join(', ')})`).join(', ');
+        const values = data.map(row => `(${fillable.map(col => row[col] == null ? 'NULL' : `'${row[col]}'`).join(', ')})`).join(', ');
         const params = data.flatMap(row => fillable.map(col => row[col]));
         const sql = `INSERT INTO ${table} (${columns}) VALUES ${values}`;
         // console.log(sql);
@@ -147,7 +159,19 @@ const model = (constructor = {
                 {
                     if(typeof(v.value) != 'object')
                     {
-                        array_where.push(`${v.key} = '${v.value}'`);
+                        if(v.key == 'from')
+                        {
+                            array_where.push(`time_created >= '${v.value} 0:0:01'`);
+                        }
+                        else if(v.key == 'to')
+                        {
+                            array_where.push(`time_created <= '${v.value} 23:59:59'`);
+                        }
+                        else
+                        {
+                            array_where.push(`${v.key} = '${v.value}'`);
+                        }
+                        // array_where.push(`${v.key} = '${v.value}'`);
                     }
                     else
                     {

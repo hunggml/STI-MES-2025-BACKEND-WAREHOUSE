@@ -11,6 +11,7 @@ const { cwd } = require('../config/router.js')
     , MasterDataProduct = require('../app/controllers/MasterData/Product')
     , MasterDataWarehouse = require('../app/controllers/MasterData/Warehouse')
     , MasterDataLocation = require('../app/controllers/MasterData/Location')
+    , Import = require('../app/controllers/WarehouseSystem/Import')
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const CheckToken = require('../app/controllers/CheckToken');
@@ -68,6 +69,21 @@ app.use('/settings/machine', masterDataMachineRouter);
 app.use('/settings/product', masterDataProductRouter);
 app.use('/settings/warehouse', masterDataWarehouseRouter);
 app.use('/settings/location', masterDataLocationRouter);
+
+
+// warehouse system 
+
+// import
+const importRouter = express.Router();
+importRouter.get('/get-data-command-import', async (req, res) => { Import.SendDataCommadImport(req, res); });
+importRouter.post('/create-command-import', async (req, res) => { Import.CreateCommandImport(req, res); });
+importRouter.get('/get-distinct-command-import', async (req, res) => { Import.SendDistinctCommandImport(req, res); });
+
+importRouter.get('/get-data-import-detail', async (req, res) => { Import.SendDataImportDetail(req, res); });
+importRouter.get('/get-distinct-import-detail', async (req, res) => { Import.SendDistinctImportDetail(req, res); });
+importRouter.post('/import-warehouse', async (req, res) => { Import.ImportWarehouse(req, res); });
+
+app.use('/warehouse-system/import', importRouter);
 
 
 module.exports = app; 
