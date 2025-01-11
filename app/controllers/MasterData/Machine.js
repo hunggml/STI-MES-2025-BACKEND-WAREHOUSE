@@ -2,17 +2,7 @@
 const moment = require('moment');
 const MachineModel = require('../../models/MasterData/Machine');
 const CheckToken = require('../CheckToken');
-const env = require('dotenv').config();
-var db = env.parsed.DB_DATABASE;
-const ModelQuery = require("../../models/ModelQuery");
 const MachineView = require('../../view/MasterData/Machine');
-
-// const GetDataMachine = async () => {
-//     listMachines = await MachineModel.get({
-//         orderBy: "time_updated DESC",
-//         offset: 0,
-//     });
-// }
 
 const GetDataMachine = async ( req ) => {
 
@@ -59,13 +49,11 @@ const SendDataMachine = async (req, res) => {
         console.log(req.query);
         await CheckToken.checkToken(req,res);
         let datas = await GetDataMachine(req.query);
-        // console.log(datas);
-
         return res.status(200).send(datas);
         
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 }
 
@@ -131,26 +119,16 @@ const SettingMachine = async (req, res) => {
                 else
                 {
                     return res.status(500).send({
-                        message: 13 // machine is not pass
+                        message: 13
                     });
                 }
             }
             else
             {
-                // const check_symbols_machine = await MachineView.first({
-                //     where: [
-                //         {
-                //             key: "symbols",
-                //             value: request.symbols 
-                //         }
-                //     ],
-                //     orderBy: "time_updated DESC"
-                // });
-
                 if(check_symbols_machine)
                 {
                     return res.status(500).send({
-                        message: 11 // symbols exist 
+                        message: 11
                     });
                 }
 
@@ -168,7 +146,7 @@ const SettingMachine = async (req, res) => {
                 ]);
 
                 return res.status(200).send({
-                    message: 12 // setting machine success
+                    message: 12
                 });
             }
         }
@@ -185,12 +163,10 @@ const LockMachine = async (req, res) => {
         let request = req.body;
         let user_id = req.user;
         let time = moment().format('YYYY-MM-DD HH:mm:ss');
-    // console.log(user_id);
         if(user_id)
         {
             if(request.id)
             {
-                // const check_machine = listMachines.find(item => item.id == request.id);
                 let check_machine = await MachineView.first({
                     where: [
                         {
@@ -200,7 +176,6 @@ const LockMachine = async (req, res) => {
                     ],
                     orderBy: "time_updated DESC"
                 });
-                // console.log(check_machine.isdelete);
                 if(check_machine)
                 {
                     let data = {
@@ -220,7 +195,7 @@ const LockMachine = async (req, res) => {
                 else
                 {
                     return res.status(500).send({
-                        message: 13 // machine isnot pass
+                        message: 13
                     });
                 }
             }
@@ -265,16 +240,13 @@ const DistinctData = async (req) => {
 
 const SendDistinctMachine = async (req,res) => {
     try {
-        // console.log(req.query);
         await CheckToken.checkToken(req,res);
         let datas = await DistinctData(req.query);
-        // console.log(datas);
-
         return res.status(200).send(datas);
         
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 } 
 

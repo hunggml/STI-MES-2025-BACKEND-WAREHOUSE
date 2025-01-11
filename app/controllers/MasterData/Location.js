@@ -2,17 +2,7 @@
 const moment = require('moment');
 const LocationModel = require('../../models/MasterData/Location');
 const CheckToken = require('../CheckToken');
-const env = require('dotenv').config();
-var db = env.parsed.DB_DATABASE;
-const ModelQuery = require("../../models/ModelQuery");
 const LocationView = require('../../view/MasterData/Location');
-
-// const GetDataLocation = async () => {
-//     listLocations = await LocationModel.get({
-//         orderBy: "time_updated DESC",
-//         offset: 0,
-//     });
-// }
 
 const GetDataLocation = async ( req ) => {
 
@@ -53,7 +43,6 @@ const GetDataLocation = async ( req ) => {
 
     if(page == 0)
     {
-        // console.log(1);
         listLocations = await LocationView.get({
             where: whereConditions,
             orderBy: "time_updated DESC"
@@ -61,7 +50,6 @@ const GetDataLocation = async ( req ) => {
     }
     else
     {
-        // console.log(2);
         listLocations = await LocationView.get({
             where: whereConditions,
             orderBy: "time_updated DESC",
@@ -88,25 +76,21 @@ const GetDataLocation = async ( req ) => {
 
 const SendDataLocation = async (req, res) => {
     try {
-        // console.log(req.query);
-        // await CheckToken.checkToken(req,res);
+        await CheckToken.checkToken(req,res);
         let datas = await GetDataLocation(req.query);
-        // console.log(datas);
-
         return res.status(200).send(datas);
         
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 }
 
 const SettingLocation = async (req, res) => {
-    // try {
+    try {
         await CheckToken.checkToken(req,res);
         let request = req.body;
         let user_id = req.user;
-        // console.log(request)
         let time    = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
         {
@@ -174,7 +158,6 @@ const SettingLocation = async (req, res) => {
                     user_updated    : user_id,
                     time_updated    : time,
                 };
-                // const check_location = listLocations.find(item => item.id == request.id);
                 const check_location = await LocationView.first({
                     where: [
                         {
@@ -214,7 +197,6 @@ const SettingLocation = async (req, res) => {
                             });
                         }
                     }
-                    // console.log('a');
                     
                     await LocationModel.update(
                         data,
@@ -283,10 +265,10 @@ const SettingLocation = async (req, res) => {
                 });
             }
         }
-    // }
-    // catch(e) {
-    //     console.log(e);
-    // }
+    }
+    catch(e) {
+        console.log(e);
+    }
 }
 
 const LockLocation = async (req, res) => {
@@ -295,12 +277,10 @@ const LockLocation = async (req, res) => {
         let request = req.body;
         let user_id = req.user;
         let time = moment().format('YYYY-MM-DD HH:mm:ss');
-    // console.log(user_id);
         if(user_id)
         {
             if(request.id)
             {
-                // const check_location = listLocations.find(item => item.id == request.id);
                 let check_location = await LocationView.first({
                     where: [
                         {
@@ -310,7 +290,6 @@ const LockLocation = async (req, res) => {
                     ],
                     orderBy: "time_updated DESC"
                 });
-                // console.log(check_location.isdelete);
                 if(check_location)
                 {
                     let data = {
@@ -375,16 +354,13 @@ const DistinctData = async (req) => {
 
 const SendDistinctLocation = async (req,res) => {
     try {
-        // console.log(req.query);
         await CheckToken.checkToken(req,res);
         let datas = await DistinctData(req.query);
-        // console.log(datas);
-
         return res.status(200).send(datas);
         
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 } 
 

@@ -27,11 +27,11 @@ const GetDataCommandImport = async ( req ) => {
         },
         {
             key: "from",
-            value: moment(req.datepicker[0]).format('YYYY-MM-DD')
+            value: req.datepicker ? moment(req.datepicker[0]).format('YYYY-MM-DD') : ''
         },
         {
             key: "to",
-            value: moment(req.datepicker[1]).format('YYYY-MM-DD')
+            value: req.datepicker ? moment(req.datepicker[1]).format('YYYY-MM-DD') : ''
         },
         {
             key: "user_created_id",
@@ -69,15 +69,14 @@ const GetDataCommandImport = async ( req ) => {
 
 const SendDataCommadImport = async (req, res) => {
     try {
-        // console.log(req.query);
         await CheckToken.checkToken(req,res);
         let datas = await GetDataCommandImport(req.query);
 
         return res.status(200).send(datas);
         
     }
-    catch {
-
+    catch(e) {
+        console.log(e)
     }
 }
 
@@ -233,8 +232,8 @@ const SendDistinctCommandImport = async (req,res) => {
         return res.status(200).send(datas);
         
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 } 
 
@@ -264,11 +263,11 @@ const GetDataImportDetail = async ( req ) => {
         },
         {
             key: "from",
-            value: moment(req.datepicker[0]).format('YYYY-MM-DD')
+            value: req.datepicker ? moment(req.datepicker[0]).format('YYYY-MM-DD') : ''
         },
         {
             key: "to",
-            value: moment(req.datepicker[1]).format('YYYY-MM-DD')
+            value: req.datepicker ? moment(req.datepicker[1]).format('YYYY-MM-DD') : ''
         },
         {
             key: "user_imported_id",
@@ -310,8 +309,8 @@ const SendDataImportDetail = async (req, res) => {
         let datas = await GetDataImportDetail(req.query);
         return res.status(200).send(datas);
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 }
 
@@ -354,8 +353,8 @@ const SendDistinctImportDetail = async (req,res) => {
         return res.status(200).send(datas);
         
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 } 
 

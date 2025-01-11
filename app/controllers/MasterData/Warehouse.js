@@ -3,17 +3,8 @@ const moment = require('moment');
 const WarehouseModel = require('../../models/MasterData/Warehouse');
 const LocationModel = require('../../models/MasterData/Location');
 const CheckToken = require('../CheckToken');
-const env = require('dotenv').config();
-var db = env.parsed.DB_DATABASE;
-const ModelQuery = require("../../models/ModelQuery");
 const WarehouseView = require('../../view/MasterData/Warehouse');
 
-// const GetDataWarehouse = async () => {
-//     listWarehouses = await WarehouseModel.get({
-//         orderBy: "time_updated DESC",
-//         offset: 0,
-//     });
-// }
 
 const GetDataWarehouse = async ( req ) => {
 
@@ -70,16 +61,13 @@ const GetDataWarehouse = async ( req ) => {
 
 const SendDataWarehouse = async (req, res) => {
     try {
-        // console.log(req.query);
-        // await CheckToken.checkToken(req,res);
+        await CheckToken.checkToken(req,res);
         let datas = await GetDataWarehouse(req.query);
-        // console.log(datas);
-
         return res.status(200).send(datas);
         
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 }
 
@@ -114,7 +102,6 @@ const SettingWarehouse = async (req, res) => {
                     user_updated    : user_id,
                     time_updated    : time,
                 };
-                // const check_warehouse = listWarehouses.find(item => item.id == request.id);
                 const check_warehouse = await WarehouseView.first({
                     where: [
                         {
@@ -127,41 +114,6 @@ const SettingWarehouse = async (req, res) => {
 
                 if(check_warehouse)
                 {
-                    // const check_symbols_warehouse_update = listWarehouses.find(item => item.symbols == request.symbols && item.id != request.id);
-                    // const check_email_warehouse_update   = listWarehouses.find(item => item.email == request.email && item.id != request.id);
-                    // const check_tax_warehouse_update     = listWarehouses.find(item => item.tax == request.tax && item.id != request.id);
-                    
-                    // const check_symbols_warehouse_update = await WarehouseView.first({
-                    //     where: [
-                    //         {
-                    //             key: "symbols",
-                    //             value: request.symbols 
-                    //         }
-                    //     ],
-                    //     orderBy: "time_updated DESC"
-                    // });
-
-                    // const check_email_warehouse_update = await WarehouseView.first({
-                    //     where: [
-                    //         {
-                    //             key: "email",
-                    //             value: request.email 
-                    //         }
-                    //     ],
-                    //     orderBy: "time_updated DESC"
-                    // });
-
-                    // const check_tax_warehouse_update = await WarehouseView.first({
-                    //     where: [
-                    //         {
-                    //             key: "tax",
-                    //             value: request.tax 
-                    //         }
-                    //     ],
-                    //     orderBy: "time_updated DESC"
-                    // });
-                    
-                    
                     if(check_symbols_warehouse && check_symbols_warehouse.id != request.id)
                     {
                         return res.status(500).send({
@@ -195,7 +147,6 @@ const SettingWarehouse = async (req, res) => {
                     });
                 }
 
-                // add kho
                 await WarehouseModel.insert([
                     { 
                         name            : request.name ?? '',
@@ -254,7 +205,6 @@ const SettingWarehouse = async (req, res) => {
                     }
                     position_x += 3;
                 }
-                // add location
                 await LocationModel.insert(array_locations);
 
                 return res.status(200).send({
@@ -274,12 +224,10 @@ const LockWarehouse = async (req, res) => {
         let request = req.body;
         let user_id = req.user;
         let time = moment().format('YYYY-MM-DD HH:mm:ss');
-    // console.log(user_id);
         if(user_id)
         {
             if(request.id)
             {
-                // const check_warehouse = listWarehouses.find(item => item.id == request.id);
                 let check_warehouse = await WarehouseView.first({
                     where: [
                         {
@@ -289,7 +237,6 @@ const LockWarehouse = async (req, res) => {
                     ],
                     orderBy: "time_updated DESC"
                 });
-                // console.log(check_warehouse.isdelete);
                 if(check_warehouse)
                 {
                     let data = {
@@ -354,16 +301,12 @@ const DistinctData = async (req) => {
 
 const SendDistinctWarehouse = async (req,res) => {
     try {
-        // console.log(req.query);
         await CheckToken.checkToken(req,res);
         let datas = await DistinctData(req.query);
-        // console.log(datas);
-
         return res.status(200).send(datas);
-        
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 } 
 
