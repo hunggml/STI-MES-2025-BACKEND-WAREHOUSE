@@ -168,6 +168,7 @@ const CreateCommandImport = async (req, res) => {
                         quantity            : result[i],
                         inventory           : null,
                         status              : 1,
+                        type                : 1,
                         note                : v.note ?? '',
                         user_created        : user_id,
                         user_updated        : user_id,

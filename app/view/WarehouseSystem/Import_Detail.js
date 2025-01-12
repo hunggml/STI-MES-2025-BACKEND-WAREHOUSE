@@ -13,6 +13,7 @@ const apps = model({
         'quantity',
         'inventory',
         'status',
+        'type',
         'note',
         'user_created',
         'user_created_id',
