@@ -81,6 +81,8 @@ importRouter.get('/get-distinct-command-import', async (req, res) => { Import.Se
 
 importRouter.get('/get-data-import-detail', async (req, res) => { Import.SendDataImportDetail(req, res); });
 importRouter.get('/get-distinct-import-detail', async (req, res) => { Import.SendDistinctImportDetail(req, res); });
+importRouter.get('/get-data-before-import', async (req, res) => { Import.SendDataBeforeImport(req, res); });
+importRouter.post('/turn-on-led-before-import', async (req, res) => { Import.SettingLedLocation(req, res); });
 importRouter.post('/import-warehouse', async (req, res) => { Import.ImportWarehouse(req, res); });
 
 app.use('/warehouse-system/import', importRouter);

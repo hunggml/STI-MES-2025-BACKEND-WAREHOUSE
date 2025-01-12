@@ -9,6 +9,7 @@ const apps = model({
         'product_id',
         'location_id',
         'label',
+        'lot_number',
         'quantity',
         'inventory',
         'status',
@@ -28,6 +29,9 @@ const apps = model({
         'product_name',
         'product_symbols',
         'product_unit',
+        'warehouse_import_id',
+        'warehouse_name',
+        'warehouse_symbols',
         'location_name',
         'location_symbols',
         'isdelete'

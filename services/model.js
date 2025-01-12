@@ -78,6 +78,26 @@ const model = (constructor = {
                 whereClause = `WHERE ` + array_where.join(' AND ');
             }
         }
+        if(request.whereElse)
+        {
+            let array_whereElse = [];
+            request.whereElse.map(function(v){
+                if(v.value != null && v.value != '' && v.value || v.value === 0)
+                {
+                    let value_string = '';
+                    v.value.map(function(v,i)
+                    {
+                        value_string += `${i != 0 ? ',' : ''}'${v}'`;
+                    })
+                    array_whereElse.push(`${v.key} not in( ${value_string} )`);
+                }
+            });
+
+            if(array_whereElse.length > 0 )
+            {
+                whereClause = `WHERE ` + array_whereElse.join(' AND ');
+            }
+        }
 
         const orderBy = request.orderBy ? `ORDER BY ${request.orderBy}` : '';
         const limit = request.limit ? `LIMIT ${request.limit}` : '';
@@ -200,6 +220,57 @@ const model = (constructor = {
         return results[0]?.count || 0;
     };
 
+    const sum = async (request = {}) => {
+        let whereClause = '';
+        if(request.where)
+        {
+            let array_where = [];
+            request.where.map(function(v){
+                if(v.value != null && v.value != '' && v.value || v.value === 0)
+                {
+                    if(typeof(v.value) != 'object')
+                    {
+                        if(v.key == 'from')
+                        {
+                            array_where.push(`time_created >= '${v.value} 0:0:01'`);
+                        }
+                        else if(v.key == 'to')
+                        {
+                            array_where.push(`time_created <= '${v.value} 23:59:59'`);
+                        }
+                        else
+                        {
+                            array_where.push(`${v.key} = '${v.value}'`);
+                        }
+                        // array_where.push(`${v.key} = '${v.value}'`);
+                    }
+                    else
+                    {
+                        let value_string = '';
+                        v.value.map(function(v,i)
+                        {
+                            value_string += `${i != 0 ? ',' : ''}'${v}'`;
+                        })
+                        array_where.push(`${v.key} in( ${value_string} )`);
+
+                    }
+                    // array_where.push(`${v.key} '${typeof(v.value) == 'string' ? '=' : 'in' }'`);
+                }
+            });
+
+            if(array_where.length > 0 )
+            {
+                whereClause = `WHERE ` + array_where.join(' AND ');
+            }
+        }
+        // const whereClause = request.where ? `WHERE ${request.where.join(' AND ')}` : '';
+        const sql = `SELECT sum(${request.select}) AS sum FROM ${table} ${whereClause}`;
+        // console.log(sql);
+        if (queryLog) console.log(sql);
+        const results = await query(sql);
+        return results[0]?.sum || 0;
+    };
+
     const countDistinct = async (request = {}) => {
         let distinctClause = '';
         if(request.distinct)
@@ -230,7 +301,8 @@ const model = (constructor = {
         remove,
         count,
         selectDistinct,
-        countDistinct
+        countDistinct,
+        sum
     };
 };
 

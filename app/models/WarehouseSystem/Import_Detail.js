@@ -8,6 +8,7 @@ const apps = model({
         'product_id',
         'location_id',
         'label',
+        'lot_number',
         'quantity',
         'inventory',
         'status',
