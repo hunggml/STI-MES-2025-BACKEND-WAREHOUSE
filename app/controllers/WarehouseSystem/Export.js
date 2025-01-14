@@ -472,10 +472,20 @@ const ExportWarehouse = async (req, res) => {
         let request             = req.body;
         let user_id             = req.user;
         let time                = moment().format('YYYY-MM-DD HH:mm:ss');
+        let time_command_import = moment().format('YYYYMMDDHHmmss');
         let array_datas_import  = [];
         var array_errors        = [];
         if(user_id)
         {
+            let get_data_warehouse_import = await CommandExportView.first({
+                where : [
+                    {
+                        key: 'id',
+                        value: request.command_export_id
+                    }
+                ]
+            });
+            console.log(get_data_warehouse_import);
             // check du lieu tung thang
             await Promise.all(request.data_exports.map(async (v) => {
                 let check_label = await ExportDetailView.first({
@@ -520,7 +530,7 @@ const ExportWarehouse = async (req, res) => {
                             quantity            : v.quantity,
                             inventory           : null,
                             status              : 1,
-                            type                : 1,
+                            type                : 3,
                             note                : check_label.note ?? '',
                             user_created        : user_id,
                             user_updated        : user_id,
@@ -545,6 +555,32 @@ const ExportWarehouse = async (req, res) => {
             }));
 
             await ImportDetailModel.insert(array_datas_import);
+            await CommandImportModel.insert([
+                { 
+                    name                : `Lệnh Nhập Kho -${time_command_import}`,
+                    symbols             : `LNK-${time_command_import}`,
+                    note                : null,
+                    warehouse_import_id : get_data_warehouse_import.warehouse_import_id,
+                    user_created        : user_id,
+                    user_updated        : user_id,
+                    time_created        : time,
+                    time_updated        : time,
+                    isdelete            : 0,
+                },
+            ]);
+
+            let get_id_command_improt = await CommandImportView.first({
+                where: [
+                    {
+                        key: "symbols",
+                        value: request.symbols 
+                    }
+                ],
+                orderBy: "time_updated DESC"
+            });
+
+            await ImportDetailModel.query(`update import_detail set command_import_id = ${get_id_command_improt.id} where command_import_id is null and type = 3`)
+
             if(array_errors.length > 0)
             {
                 return res.status(500).send({

@@ -107,7 +107,7 @@ const model = (constructor = {
         const limit = request.limit ? `LIMIT ${request.limit}` : '';
         const offset = request.offset ? `OFFSET ${request.offset}` : '';
         let sql = `SELECT ${request.select || '*'} FROM ${table} ${whereClause} ${orderBy} ${limit} ${offset}`;
-        console.log(sql);
+        // console.log(sql);
         if (queryLog) console.log(sql);
         return query(sql);
     };

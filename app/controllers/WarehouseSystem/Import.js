@@ -465,7 +465,7 @@ async function processLocations(get_location, check_label,quantity_need) {
 
 const GetDataBeforeImport = async ( req ) => {
 
-    console.log(req);
+    // console.log(req);
     let datas = req.data_labels ? Object.values(req.data_labels) : [];
     let listData = [];
     let reset_quantity_need = 0;
@@ -475,6 +475,10 @@ const GetDataBeforeImport = async ( req ) => {
     {
         let check_label = await ImportDetailView.first({
             where: [
+                {
+                    key: "status",
+                    value: 1
+                },
                 {
                     key: "label",
                     value: datas[i].label
@@ -541,7 +545,7 @@ const SendDataBeforeImport = async (req, res) => {
         await CheckToken.checkToken(req,res);
         if(req.user)
         {
-            let datas = await GetDataBeforeImport(req.query);
+            let datas = await GetDataBeforeImport(req.body);
             return res.status(200).send(datas);
         }
     }
