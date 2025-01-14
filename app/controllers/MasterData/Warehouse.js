@@ -62,9 +62,11 @@ const GetDataWarehouse = async ( req ) => {
 const SendDataWarehouse = async (req, res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await GetDataWarehouse(req.query);
-        return res.status(200).send(datas);
-        
+        if(req.user)
+        {
+            let datas = await GetDataWarehouse(req.query);
+            return res.status(200).send(datas);
+        }
     }
     catch(e) {
         console.log(e);
@@ -77,7 +79,7 @@ const SettingWarehouse = async (req, res) => {
         let request = req.body;
         let user_id = req.user;
         var array_locations = [];
-        console.log(request);
+        // console.log(request);
         let time    = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
         {
@@ -302,8 +304,11 @@ const DistinctData = async (req) => {
 const SendDistinctWarehouse = async (req,res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await DistinctData(req.query);
-        return res.status(200).send(datas);
+        if(req.user)
+        {
+            let datas = await DistinctData(req.query);
+            return res.status(200).send(datas);
+        }
     }
     catch(e) {
         console.log(e);

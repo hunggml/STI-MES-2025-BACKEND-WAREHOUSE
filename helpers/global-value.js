@@ -7,3 +7,5 @@ global.listWarehouses = [];
 global.listLocations = [];
 global.listCommandImports = [];
 global.listImportDetails = [];
+global.listCommandExports = [];
+global.listExportDetails = [];

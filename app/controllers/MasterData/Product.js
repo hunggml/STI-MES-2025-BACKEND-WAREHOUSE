@@ -62,9 +62,11 @@ const GetDataProduct = async ( req ) => {
 const SendDataProduct = async (req, res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await GetDataProduct(req.query);
-        return res.status(200).send(datas);
-        
+        if(req.user)
+        {
+            let datas = await GetDataProduct(req.query);
+            return res.status(200).send(datas);   
+        }
     }
     catch(e) {
         console.log(e);
@@ -76,7 +78,7 @@ const SettingProduct = async (req, res) => {
         await CheckToken.checkToken(req,res);
         let request = req.body;
         let user_id = req.user;
-        console.log(request);
+        // console.log(request);
         let time = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
         {
@@ -263,8 +265,11 @@ const DistinctData = async (req) => {
 const SendDistinctProduct = async (req,res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await DistinctData(req.query);
-        return res.status(200).send(datas);
+        if(req.user)
+        {
+            let datas = await DistinctData(req.query);
+            return res.status(200).send(datas);
+        }
     }
     catch(e) {
         console.log(e);
@@ -275,40 +280,43 @@ const GetDataBom = async ( req,res ) => {
     try {
         await CheckToken.checkToken(req,res);
 
-        let page        = req.page;
-        let limit_page  = 10;
-
-        const offset = (page - 1) * limit_page;
-        
-        const whereConditions = [
-            {
-                key: "product_id",
-                value: req.query.product_id 
-            },
-            {
-                key: "isdelete",
-                value: 0
-            },
+        if(req.user)
+        {
+            let page        = req.page;
+            let limit_page  = 10;
+    
+            const offset = (page - 1) * limit_page;
             
-        ];
-
-        let listBom = await BomView.get({
-            where: whereConditions,
-            orderBy: "time_updated DESC",
-            limit: limit_page,
-            offset,
-        });
-
-        const totalRecords = await BomView.count({
-            where: whereConditions,
-        });
-
-        let datas = {
-            listBom,
-            totalRecords
+            const whereConditions = [
+                {
+                    key: "product_id",
+                    value: req.query.product_id 
+                },
+                {
+                    key: "isdelete",
+                    value: 0
+                },
+                
+            ];
+    
+            let listBom = await BomView.get({
+                where: whereConditions,
+                orderBy: "time_updated DESC",
+                limit: limit_page,
+                offset,
+            });
+    
+            const totalRecords = await BomView.count({
+                where: whereConditions,
+            });
+    
+            let datas = {
+                listBom,
+                totalRecords
+            }
+    
+            return res.status(200).send(datas);
         }
-
-        return res.status(200).send(datas);
         
     }
     catch(e) {

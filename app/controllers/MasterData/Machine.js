@@ -46,11 +46,13 @@ const GetDataMachine = async ( req ) => {
 
 const SendDataMachine = async (req, res) => {
     try {
-        console.log(req.query);
+        // console.log(req.query);
         await CheckToken.checkToken(req,res);
-        let datas = await GetDataMachine(req.query);
-        return res.status(200).send(datas);
-        
+        if(req.user)
+        {
+            let datas = await GetDataMachine(req.query);
+            return res.status(200).send(datas);
+        }
     }
     catch(e) {
         console.log(e);
@@ -241,9 +243,11 @@ const DistinctData = async (req) => {
 const SendDistinctMachine = async (req,res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await DistinctData(req.query);
-        return res.status(200).send(datas);
-        
+        if(req.user)
+        {
+            let datas = await DistinctData(req.query);
+            return res.status(200).send(datas);
+        }
     }
     catch(e) {
         console.log(e);

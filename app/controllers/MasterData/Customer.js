@@ -67,8 +67,11 @@ const GetDataCustomer = async ( req ) => {
 const SendDataCustomer = async (req, res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await GetDataCustomer(req.query);
-        return res.status(200).send(datas);
+        if(req.user)
+        {
+            let datas = await GetDataCustomer(req.query);
+            return res.status(200).send(datas);
+        }
     }
     catch(e) {
         console.log(e);
@@ -368,8 +371,11 @@ const DistinctData = async (req) => {
 const SendDistinctCustomer = async (req,res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await DistinctData(req.query);
-        return res.status(200).send(datas);
+        if(req.user)
+        {
+            let datas = await DistinctData(req.query);
+            return res.status(200).send(datas);
+        }
         
     }
     catch(e) {

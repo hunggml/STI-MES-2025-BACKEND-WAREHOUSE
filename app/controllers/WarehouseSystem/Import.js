@@ -74,13 +74,18 @@ const GetDataCommandImport = async ( req ) => {
 const SendDataCommadImport = async (req, res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await GetDataCommandImport(req.query);
-
-        return res.status(200).send(datas);
+        if(req.user)
+        {
+            let datas = await GetDataCommandImport(req.query);
+            return res.status(200).send(datas);
+        }
         
     }
     catch(e) {
-        console.log(e)
+        console.log(e);
+        // return res.status(500).send({
+        //     message: 40
+        // });
     }
 }
 
@@ -156,8 +161,7 @@ const CreateCommandImport = async (req, res) => {
             {
                 let get_datas = Math.ceil(v.quantity / v.standard);
                 let result = divideNumberIntoChunks(v.quantity, v.standard);
-                
-                for(let i = 0 ; i < get_datas ; i++)
+                for(let i = 0 ; i < get_datas ?? 1 ; i++)
                 {
                     let data = {
                         command_import_id   : get_data_command_import_new.id,
@@ -185,7 +189,7 @@ const CreateCommandImport = async (req, res) => {
             })
               
             await ImportDetailModel.insert(array_datas);
-
+            await get_count_label_unimport();
             return res.status(200).send({
                 message: 34
             });
@@ -194,6 +198,9 @@ const CreateCommandImport = async (req, res) => {
     }
     catch(e) {
         console.log(e);
+        // return res.status(500).send({
+        //     message: 40
+        // });
     }
 }
 
@@ -232,13 +239,18 @@ const DistinctDataCommandImport = async (req) => {
 const SendDistinctCommandImport = async (req,res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await DistinctDataCommandImport(req.query);
-
-        return res.status(200).send(datas);
+        if(req.user)
+        {
+            let datas = await DistinctDataCommandImport(req.query);
+            return res.status(200).send(datas);
+        }
         
     }
     catch(e) {
         console.log(e);
+        // return res.status(500).send({
+        //     message: 40
+        // });
     }
 } 
 
@@ -256,11 +268,7 @@ const GetDataImportDetail = async ( req ) => {
         },
         {
             key: "product_id",
-            value: req.name 
-        },
-        {
-            key: "location_id",
-            value: req.symbols 
+            value: req.product_id 
         },
         {
             key: "status",
@@ -307,6 +315,7 @@ const GetDataImportDetail = async ( req ) => {
     });
     // const totalPages = Math.ceil(totalRecords / limit_page);
 
+    // console.log(listImportDetails);
     return {
         listImportDetails,
         // pagination: {
@@ -320,8 +329,11 @@ const GetDataImportDetail = async ( req ) => {
 const SendDataImportDetail = async (req, res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await GetDataImportDetail(req.query);
-        return res.status(200).send(datas);
+        if(req.user)
+        {
+            let datas = await GetDataImportDetail(req.query);
+            return res.status(200).send(datas);
+        }
     }
     catch(e) {
         console.log(e);
@@ -363,12 +375,17 @@ const DistinctDataImportDetail = async (req) => {
 const SendDistinctImportDetail = async (req,res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await DistinctDataImportDetail(req.query);
-        return res.status(200).send(datas);
-        
+        if(req.user)
+        {
+            let datas = await DistinctDataImportDetail(req.query);
+            return res.status(200).send(datas);
+        }
     }
     catch(e) {
         console.log(e);
+        // return res.status(500).send({
+        //     message: 40
+        // });
     }
 } 
 
@@ -384,56 +401,62 @@ async function processLocations(get_location, check_label,quantity_need) {
             orderBy: "time_updated DESC"
         });
 
-        let quantity_can_use = v.stock_max - (get_stock + quantity_need);
-
-        console.log(`stock : ${quantity_can_use}, need : ${quantity_need}, request : ${check_label.quantity}`)
-        if (quantity_can_use < check_label.quantity) {
-            return { 
-                result: {
-                    label: check_label.label,
-                    status_led: v.status_led,
-                    location_name: v.name,
-                    location_symbols: v.symbols,
-                    location_id: v.id,
-                    r: v.r,
-                    g: v.g,
-                    b: v.b,
-                },
-                reset_quantity_need_return : 0,
-            };
-            
-        }
-        if (quantity_can_use > 0) {
-            return { 
-                result: {
-                    label: check_label.label,
-                    status_led: v.status_led,
-                    location_name: v.name,
-                    location_symbols: v.symbols,
-                    location_id: v.id,
-                    r: v.r,
-                    g: v.g,
-                    b: v.b,
-                },
-                reset_quantity_need_return : 1,
-            };
-            
-        }
-        else
+        if(get_stock < v.stock_max && (v.stock_max - get_stock >= quantity_need))
         {
-            return { 
-                result: {
-                    label: check_label.label,
-                    status_led: v.status_led,
-                    location_name: v.name,
-                    location_symbols: v.symbols,
-                    location_id: v.id,
-                    r: v.r,
-                    g: v.g,
-                    b: v.b,
-                },
-                reset_quantity_need_return : 0,
-            };        
+            let quantity_can_use = v.stock_max - (get_stock + quantity_need);
+    
+            // console.log(`stock : ${quantity_can_use}, need : ${quantity_need}, request : ${check_label.quantity}`)
+            if (quantity_can_use < check_label.quantity) {
+                return { 
+                    result: {
+                        label: check_label.label,
+                        status_led: v.status_led,
+                        location_name: v.name,
+                        location_symbols: v.symbols,
+                        location_id: v.id,
+                        status : check_label.status,
+                        r: v.r,
+                        g: v.g,
+                        b: v.b,
+                    },
+                    reset_quantity_need_return : 0,
+                };
+                
+            }
+            if (quantity_can_use > 0) {
+                return { 
+                    result: {
+                        label: check_label.label,
+                        status_led: v.status_led,
+                        location_name: v.name,
+                        location_symbols: v.symbols,
+                        location_id: v.id,
+                        status : check_label.status,
+                        r: v.r,
+                        g: v.g,
+                        b: v.b,
+                    },
+                    reset_quantity_need_return : 1,
+                };
+                
+            }
+            else
+            {
+                return { 
+                    result: {
+                        label: check_label.label,
+                        status_led: v.status_led,
+                        location_name: v.name,
+                        location_symbols: v.symbols,
+                        location_id: v.id,
+                        status : check_label.status,
+                        r: v.r,
+                        g: v.g,
+                        b: v.b,
+                    },
+                    reset_quantity_need_return : 0,
+                };        
+            }
         }
     }
 
@@ -443,23 +466,40 @@ async function processLocations(get_location, check_label,quantity_need) {
 const GetDataBeforeImport = async ( req ) => {
 
     console.log(req);
+    let datas = req.data_labels ? Object.values(req.data_labels) : [];
     let listData = [];
     let reset_quantity_need = 0;
     let quantity_need = 0;
     let location_id_used = [];
-    for(let i = 0; i < req.data_labels.length ; i++)
+    for(let i = 0; i < (datas.length) ; i++)
     {
         let check_label = await ImportDetailView.first({
             where: [
                 {
                     key: "label",
-                    value: req.data_labels[i].label
+                    value: datas[i].label
                 }
             ],
             orderBy: "time_updated DESC"
         });
 
+        let get_data_warehouse = await CommandImportView.first({
+            where: [
+                {
+                    key: "id",
+                    value: check_label.command_import_id
+                }
+            ],
+            orderBy: "time_updated DESC"
+        })
+
         let get_location = await LocationView.get({
+            where:[
+                {
+                    key : 'warehouse_id',
+                    value : get_data_warehouse.warehouse_import_id
+                }
+            ],
             whereElse:[
                 {
                     key : 'id',
@@ -499,11 +539,17 @@ const GetDataBeforeImport = async ( req ) => {
 const SendDataBeforeImport = async (req, res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await GetDataBeforeImport(req.query);
-        return res.status(200).send(datas);
+        if(req.user)
+        {
+            let datas = await GetDataBeforeImport(req.query);
+            return res.status(200).send(datas);
+        }
     }
     catch(e) {
         console.log(e);
+        // return res.status(500).send({
+        //     message: 40
+        // });
     }
 }
 
@@ -513,7 +559,7 @@ const SettingLedLocation = async (req, res) => {
         let request = req.body;
         let user_id = req.user;
         let time    = moment().format('YYYY-MM-DD HH:mm:ss');
-        console.log(request)
+        // console.log(request)
         if(user_id)
         {
             request.listData.map(async (v) => {
@@ -530,7 +576,7 @@ const SettingLedLocation = async (req, res) => {
 
                 if(check_location)
                 {
-                    let sql = `update master_location set status_led = ${v.status_led}, r = ${v.r},g = ${v.g},b = ${v.b} where id = ${check_location.id}`
+                    let sql = `update master_location set status_led = ${v.status_led ? 1 : 0}, r = ${v.r},g = ${v.g},b = ${v.b} where id = ${check_location.id}`
                     LocationModel.query(sql)
                 }
 
@@ -542,79 +588,139 @@ const SettingLedLocation = async (req, res) => {
     }
     catch(e) {
         console.log(e);
+        // return res.status(500).send({
+        //     message: 40
+        // });
     }
 }
 
 const ImportWarehouse = async (req, res) => {
-    // try {
+    try {
         await CheckToken.checkToken(req,res);
         let request = req.body;
         let user_id = req.user;
         let time    = moment().format('YYYY-MM-DD HH:mm:ss');
+        // console.log(request);
+        var array_errors = [];
         if(user_id)
         {
-            // for(let i = 0 ; i < request.data_imports.length; i ++ )
-            // {
-
-                // let check_label = await ImportDetailView.first({
-                //     where: [
-                //         {
-                //             key: "label",
-                //             value: request.data_imports[i].label
-                //         }
-                //     ],
-                //     orderBy: "time_updated DESC"
-                // });
-
+            await Promise.all(request.data_imports.map(async (v) => {
                 let check_location = await LocationView.first({
                     where: [
                         {
                             key: "symbols",
-                            value: request.location_symbols
+                            value: v.location_symbols
                         }
                     ],
                     orderBy: "time_updated DESC"
                 });
-
-                // if(check_label)
-                if(check_location)
+                let check_label = await ImportDetailView.first({
+                    where: [
+                        {
+                            key: "label",
+                            value: v.label
+                        }
+                    ],
+                    orderBy: "time_updated DESC"
+                });
+                if(check_location && check_label)
                 {
-                    const data_labels =  request.data_imports;
-                    
-                    const result = `in(${data_labels.map(item => `"${item.label}"`).join(",")})`;
-                    
-                    let sql = `update import_detail set location_id = ${check_location.id}, inventory = quantity, status = 2,user_imported = ${user_id},user_updated = ${user_id},time_imported='${time}',time_updated='${time}' where label ${result}`
-                    // console.log(result,sql);
-                    ImportDetailModel.query(sql)
-                    // let data = {
-                    //     command_import_id   : check_label.id,
-                    //     product_id          : check_label.product_id,
-                    //     location_id         : request.data_imports[i].location_id,
-                    //     label               : check_label.label,
-                    //     quantity            : check_label.quantity,
-                    //     inventory           : check_label.quantity,
-                    //     status              : 2,
-                    //     note                : check_label.note,
-                    //     user_created        : check_label.user_created_id,
-                    //     user_updated        : user_id,
-                    //     user_imported       : user_id,
-                    //     time_created        : moment(check_label.time_created).format('YYYY-MM-DD hh:mm:ss'),
-                    //     time_updated        : time,
-                    //     time_imported       : time,
-                    //     isdelete            : 0,
-                    // }
-    
-                    // ImportDetailModel.update(
-                    //     data,
-                    //     { where: [`id = ${check_label.id}`] }
-                    // );
+                    let get_stock = await ImportDetailView.sum({
+                        where: [
+                            { key: "isdelete", value: 0 },
+                            { key: "status", value: 2 },
+                            { key: "location_id", value: check_location.id }
+                        ],
+                        select: "inventory",
+                        orderBy: "time_updated DESC"
+                    });
+                    let check_stock_can_import = check_location.stock_max - (get_stock + check_label.quantity);
+                    if(check_stock_can_import >= 0)
+                    {
+                        let data = {
+                            command_import_id   : check_label.command_import_id,
+                            product_id          : check_label.product_id,
+                            location_id         : check_location.id,
+                            label               : check_label.label,
+                            quantity            : check_label.quantity,
+                            inventory           : check_label.quantity,
+                            status              : 2,
+                            type                : 1,
+                            note                : check_label.note,
+                            user_created        : check_label.user_created_id,
+                            user_updated        : user_id,
+                            user_imported       : user_id,
+                            time_created        : moment(check_label.time_created).format('YYYY-MM-DD hh:mm:ss'),
+                            time_updated        : time,
+                            time_imported       : time,
+                            isdelete            : 0,
+                        }
+        
+                        await LocationModel.query(`update master_location set r=0,g=0,b=0,status_led=0 where id = ${check_location.id}`)
+                        await ImportDetailModel.update(
+                            data,
+                            { where: [`id = ${check_label.id}`] }
+                        );
+                        await get_count_label_unimport();
+
+                    }
+                    else
+                    {
+                        array_errors.push(check_label.label);
+                    }
                 }
-            // }
+                else
+                {
+                    array_errors.push(v.label);
+                }
+                return array_errors
+            }))
+            if(array_errors.length > 0)
+            {
+                return res.status(500).send({
+                    message: 37,
+                    data_labels : array_errors
+                });
+            }
             return res.status(200).send({
-                message: 35
+                message: 35,
+                data_labels : array_errors
             });
             
         }
+    }
+    catch(e) {
+        console.log(e);
+        // return res.status(500).send({
+        //     message: 40
+        // });
+    }
+}
+
+async function get_count_label_unimport ()
+// async function get_count_label_unimport (req,res)
+{
+    // try {
+    //     await CheckToken.checkToken(req,res);
+    //     let user_id = req.user;
+    //     if(user_id)
+    //     {
+            let get_count_label = await ImportDetailView.count({
+                where:[
+                    {
+                        key: "status",
+                        value: 1
+                    },
+                    {
+                        key: "isdelete",
+                        value: 0
+                    }
+                ]
+            });
+
+            __io.emit('send_data_count_label_unimport',get_count_label)
+            // return get_count_label;
+    //     }
     // }
     // catch(e) {
     //     console.log(e);
@@ -635,5 +741,6 @@ module.exports = {
     GetDataBeforeImport,
     SendDataBeforeImport,
     ImportWarehouse,
-    SettingLedLocation
+    SettingLedLocation,
+    get_count_label_unimport
 }

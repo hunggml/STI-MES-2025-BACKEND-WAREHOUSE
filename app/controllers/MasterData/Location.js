@@ -77,8 +77,11 @@ const GetDataLocation = async ( req ) => {
 const SendDataLocation = async (req, res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await GetDataLocation(req.query);
-        return res.status(200).send(datas);
+        if(req.user)
+        {
+            let datas = await GetDataLocation(req.query);
+            return res.status(200).send(datas);
+        }
         
     }
     catch(e) {
@@ -363,8 +366,11 @@ const DistinctData = async (req) => {
 const SendDistinctLocation = async (req,res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let datas = await DistinctData(req.query);
-        return res.status(200).send(datas);
+        if(req.user)
+        {
+            let datas = await DistinctData(req.query);
+            return res.status(200).send(datas);
+        }
         
     }
     catch(e) {

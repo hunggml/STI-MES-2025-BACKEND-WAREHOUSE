@@ -12,6 +12,7 @@ const { cwd } = require('../config/router.js')
     , MasterDataWarehouse = require('../app/controllers/MasterData/Warehouse')
     , MasterDataLocation = require('../app/controllers/MasterData/Location')
     , Import = require('../app/controllers/WarehouseSystem/Import')
+    , Export = require('../app/controllers/WarehouseSystem/Export')
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const CheckToken = require('../app/controllers/CheckToken');
@@ -78,7 +79,6 @@ const importRouter = express.Router();
 importRouter.get('/get-data-command-import', async (req, res) => { Import.SendDataCommadImport(req, res); });
 importRouter.post('/create-command-import', async (req, res) => { Import.CreateCommandImport(req, res); });
 importRouter.get('/get-distinct-command-import', async (req, res) => { Import.SendDistinctCommandImport(req, res); });
-
 importRouter.get('/get-data-import-detail', async (req, res) => { Import.SendDataImportDetail(req, res); });
 importRouter.get('/get-distinct-import-detail', async (req, res) => { Import.SendDistinctImportDetail(req, res); });
 importRouter.get('/get-data-before-import', async (req, res) => { Import.SendDataBeforeImport(req, res); });
@@ -86,6 +86,18 @@ importRouter.post('/turn-on-led-before-import', async (req, res) => { Import.Set
 importRouter.post('/import-warehouse', async (req, res) => { Import.ImportWarehouse(req, res); });
 
 app.use('/warehouse-system/import', importRouter);
+
+// import
+const exportRouter = express.Router();
+exportRouter.get('/get-data-command-export', async (req, res) => { Export.SendDataCommadExport(req, res); });
+exportRouter.post('/create-command-export', async (req, res) => { Export.CreateCommandExport(req, res); });
+exportRouter.get('/get-distinct-command-export', async (req, res) => { Export.SendDistinctCommandExport(req, res); });
+exportRouter.get('/get-data-export-detail', async (req, res) => { Export.SendDataExportDetail(req, res); });
+exportRouter.get('/get-distinct-export-detail', async (req, res) => { Export.SendDistinctExportDetail(req, res); });
+exportRouter.get('/get-data-before-export', async (req, res) => { Export.SendDataBeforeExport(req, res); });
+exportRouter.post('/export-warehouse', async (req, res) => { Export.ExportWarehouse(req, res); });
+
+app.use('/warehouse-system/export', exportRouter);
 
 
 module.exports = app; 

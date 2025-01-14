@@ -55,6 +55,10 @@ const model = (constructor = {
                         {
                             array_where.push(`time_created <= '${v.value} 23:59:59'`);
                         }
+                        else if(v.key == 'inventory')
+                        {
+                            array_where.push(`inventory > ${v.value}`);
+                        }
                         else
                         {
                             array_where.push(`${v.key} = '${v.value}'`);
@@ -103,7 +107,7 @@ const model = (constructor = {
         const limit = request.limit ? `LIMIT ${request.limit}` : '';
         const offset = request.offset ? `OFFSET ${request.offset}` : '';
         let sql = `SELECT ${request.select || '*'} FROM ${table} ${whereClause} ${orderBy} ${limit} ${offset}`;
-        // console.log(whereClause);
+        console.log(sql);
         if (queryLog) console.log(sql);
         return query(sql);
     };
