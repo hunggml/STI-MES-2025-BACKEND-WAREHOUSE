@@ -590,8 +590,8 @@ const ExportWarehouse = async (req, res) => {
             await ImportDetailModel.insert(array_datas_import);
             await CommandImportModel.insert([
                 { 
-                    name                : `Lệnh Nhập Kho -${time_command_import}`,
-                    symbols             : `LNK-${time_command_import}`,
+                    name                : `Nhập Chuyển Kho - ${time_command_import}`,
+                    symbols             : `NCK - ${time_command_import}`,
                     note                : null,
                     warehouse_import_id : get_data_warehouse_import.warehouse_import_id,
                     user_created        : user_id,

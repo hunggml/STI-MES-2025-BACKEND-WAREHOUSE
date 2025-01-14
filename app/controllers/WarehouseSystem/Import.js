@@ -146,7 +146,7 @@ const CreateCommandImport = async (req, res) => {
                 },
             ]);
 
-            const get_data_command_import_new = await CommandImportView.first({
+            let get_data_command_import_new = await CommandImportView.first({
                 where: [
                     {
                         key: "symbols",
@@ -545,7 +545,7 @@ const SendDataBeforeImport = async (req, res) => {
         await CheckToken.checkToken(req,res);
         if(req.user)
         {
-            let datas = await GetDataBeforeImport(req.body);
+            let datas = await GetDataBeforeImport(req.query);
             return res.status(200).send(datas);
         }
     }
@@ -620,6 +620,10 @@ const ImportWarehouse = async (req, res) => {
                 });
                 let check_label = await ImportDetailView.first({
                     where: [
+                        {
+                            key: "status",
+                            value: 1
+                        },
                         {
                             key: "label",
                             value: v.label
