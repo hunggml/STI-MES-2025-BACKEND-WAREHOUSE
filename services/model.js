@@ -82,9 +82,10 @@ const model = (constructor = {
                 whereClause = `WHERE ` + array_where.join(' AND ');
             }
         }
-        if(request.whereElse)
+        if(request.whereElse && request.where)
         {
             let array_whereElse = [];
+            let array_where_in_else = [];
             request.whereElse.map(function(v){
                 if(v.value != null && v.value != '' && v.value || v.value === 0)
                 {
@@ -96,10 +97,16 @@ const model = (constructor = {
                     array_whereElse.push(`${v.key} not in( ${value_string} )`);
                 }
             });
+            request.where.map(function(v){
+                if(v.value != null && v.value != '' && v.value || v.value === 0)
+                {
+                    array_where_in_else.push(`${v.key} = '${v.value}'`);    
+                }
+            });
 
-            if(array_whereElse.length > 0 )
+            if(array_whereElse.length > 0 && array_where_in_else.length > 0)
             {
-                whereClause = `WHERE ` + array_whereElse.join(' AND ');
+                whereClause = `WHERE ` + array_where_in_else.join(' AND ') + ' AND '+ array_whereElse.join(' AND ');
             }
         }
 

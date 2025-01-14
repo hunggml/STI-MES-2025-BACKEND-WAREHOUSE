@@ -27,6 +27,7 @@ const apps = model({
         'product_name',
         'product_symbols',
         'product_unit',
+        'status_led',
         'location_export_name',
         'location_export_symbols',
         'warehouse_export_id',

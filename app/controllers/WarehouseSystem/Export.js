@@ -10,8 +10,7 @@ const ImportDetailView = require('../../view/WarehouseSystem/Import_Detail');
 const CommandExportView = require('../../view/WarehouseSystem/Command_Export');
 const ExportDetailView = require('../../view/WarehouseSystem/Export_Detail');
 const LocationView = require('../../view/MasterData/Location');
-const LocationModel = require('../../models/MasterData/Location');
-const { orderBy } = require('lodash');
+const ProductView = require('../../view/MasterData/Product');
 // command export
 const GetDataCommandExport = async ( req ) => {
 
@@ -49,11 +48,11 @@ const GetDataCommandExport = async ( req ) => {
             key: "user_created_id",
             value: req.user_created_id 
         }
-        // ,
-        // {
-        //     key: "isdelete",
-        //     value: 0
-        // }
+        ,
+        {
+            key: "isdelete",
+            value: 0
+        }
     ];
 
     listCommandExports = await CommandExportView.get({
@@ -100,6 +99,7 @@ const CreateCommandExport = async (req, res) => {
         let request = req.body;
         let user_id = req.user;
         var array_datas_export_detail = [];
+        var array_datas_errors = [];
         let time    = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
         {
@@ -108,12 +108,14 @@ const CreateCommandExport = async (req, res) => {
                     {
                         key: "symbols",
                         value: request.symbols 
+                    },
+                    {
+                        key: "isdelete",
+                        value: 0 
                     }
                 ],
                 orderBy: "time_updated DESC"
             });
-
-            
             if(check_symbols_command_export)
             {
                 return res.status(500).send({
@@ -121,33 +123,9 @@ const CreateCommandExport = async (req, res) => {
                 });
             }
 
-            await CommandExportModel.insert([
-                { 
-                    name                : request.name ?? '',
-                    symbols             : request.symbols ?? '',
-                    note                : request.note ?? '',
-                    warehouse_export_id : request.warehouse_export_id ?? 0,
-                    warehouse_import_id : request.warehouse_import_id ?? 0,
-                    user_created        : user_id,
-                    user_updated        : user_id,
-                    time_created        : time,
-                    time_updated        : time,
-                    isdelete            : 0,
-                },
-            ]);
-
-            const get_data_command_export_new = await CommandExportView.first({
-                where: [
-                    {
-                        key: "symbols",
-                        value: request.symbols 
-                    }
-                ],
-                orderBy: "time_updated DESC"
-            });
-
             await Promise.all(request.products.map(async (v) =>
             {
+                let quantity_need = v.quantity;
                 let get_data_stock = await ImportDetailView.get({
                     where: [
                         {
@@ -168,52 +146,107 @@ const CreateCommandExport = async (req, res) => {
                         },
                         {
                             key:"warehouse_import_id",
-                            value: get_data_command_export_new.warehouse_export_id
+                            value: request.warehouse_export_id
                         }
                     ],
                     orderBy: "time_imported ASC",
                 })
-                // console.log(get_data_stock,get_data_command_export_new);
-                let quantity_need = v.quantity;
-                
-                await Promise.all(get_data_stock.map(async (value_stock) => {
-                    if(quantity_need > 0)
-                    {
-                        let data = {
-                            // command_export_id   : 1,
-                            command_export_id   : get_data_command_export_new.id,
-                            import_detail_id    : value_stock.id,
-                            product_id          : value_stock.product_id,
-                            label               : value_stock.label,
-                            lot_number          : value_stock.lot_number,
-                            location_export_id  : value_stock.location_id,
-                            quantity            : value_stock.inventory,
-                            quantity_exported   : null,
-                            status              : 1,
-                            type                : 1,
-                            note                : v.note ?? '',
-                            user_created        : user_id,
-                            user_updated        : user_id,
-                            time_created        : time,
-                            time_updated        : time,
-                            isdelete            : 0,
+                let get_data_product = await ProductView.first({
+                    where: [{ key:'id', value:v.product_id}]
+                });
+                let get_sum_stock = await ImportDetailView.sum({
+                    where: [
+                        { key: "isdelete", value: 0 },
+                        { key: "status", value: 2 },
+                        { key: "warehouse_import_id", value: request.warehouse_export_id }
+                    ],
+                    select: "inventory",
+                    orderBy: "time_updated DESC"
+                })
+                if(get_data_stock.length > 0 && quantity_need <= get_sum_stock)
+                {
+                    await Promise.all(get_data_stock.map(async (value_stock) => {
+                        if(quantity_need > 0)
+                        {
+                            let data = {
+                                // command_export_id   : 1,
+                                command_export_id   : null,
+                                import_detail_id    : value_stock.id,
+                                product_id          : value_stock.product_id,
+                                label               : value_stock.label,
+                                lot_number          : value_stock.lot_number,
+                                location_export_id  : value_stock.location_id,
+                                quantity            : value_stock.inventory,
+                                quantity_exported   : null,
+                                status              : 1,
+                                type                : 1,
+                                note                : v.note ?? '',
+                                user_created        : user_id,
+                                user_updated        : user_id,
+                                time_created        : time,
+                                time_updated        : time,
+                                isdelete            : 0,
+                            }
+                            quantity_need = quantity_need - value_stock.inventory;
+                            array_datas_export_detail.push(data);
                         }
-    
-                        quantity_need = quantity_need - value_stock.inventory;
-    
-                        array_datas_export_detail.push(data);
+                    }))
+                }
+                else
+                {
+                    let error = {
+                        product_name :get_data_product.name ?? v.product_id,
+                        product_symbols : get_data_product.symbols ?? v.product_id,
+                        quantity : quantity_need
                     }
-                }))
-                return array_datas_export_detail;
+                    array_datas_errors.push(error)
+                }
             }))
-            // console.log(array_datas_export_detail);
-              
-            await ExportDetailModel.insert(array_datas_export_detail);
 
-            return res.status(200).send({
-                message: 39
-            });
-            
+            if(array_datas_errors.length > 0 )
+            {
+                return res.status(500).send({
+                    message: 43,
+                    data_errors : array_datas_errors
+                });
+            }
+            else
+            {
+                await CommandExportModel.insert([
+                    { 
+                        name                : request.name ?? '',
+                        symbols             : request.symbols ?? '',
+                        note                : request.note ?? '',
+                        warehouse_export_id : request.warehouse_export_id ?? 0,
+                        warehouse_import_id : request.warehouse_import_id ?? 0,
+                        user_created        : user_id,
+                        user_updated        : user_id,
+                        time_created        : time,
+                        time_updated        : time,
+                        isdelete            : 0,
+                    },
+                ]);
+    
+                const get_data_command_export_new = await CommandExportView.first({
+                    where: [
+                        {
+                            key: "symbols",
+                            value: request.symbols 
+                        },
+                        {
+                            key: "isdelete",
+                            value: 0 
+                        }
+                    ],
+                    orderBy: "time_updated DESC"
+                });
+
+                await ExportDetailModel.insert(array_datas_export_detail);
+                await ExportDetailModel.query(`update export_detail set command_export_id = ${get_data_command_export_new.id} where command_export_id is null and status = 1`)
+                return res.status(200).send({
+                    message: 39
+                });
+            }
         }
     }
     catch(e) {
@@ -485,7 +518,7 @@ const ExportWarehouse = async (req, res) => {
                     }
                 ]
             });
-            console.log(get_data_warehouse_import);
+            // console.log(get_data_warehouse_import);
             // check du lieu tung thang
             await Promise.all(request.data_exports.map(async (v) => {
                 let check_label = await ExportDetailView.first({
