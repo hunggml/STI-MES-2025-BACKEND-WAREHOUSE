@@ -9,3 +9,5 @@ global.listCommandImports = [];
 global.listImportDetails = [];
 global.listCommandExports = [];
 global.listExportDetails = [];
+global.listProductsReport = [];
+global.listLabelStock = [];

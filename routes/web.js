@@ -13,6 +13,7 @@ const { cwd } = require('../config/router.js')
     , MasterDataLocation = require('../app/controllers/MasterData/Location')
     , Import = require('../app/controllers/WarehouseSystem/Import')
     , Export = require('../app/controllers/WarehouseSystem/Export')
+    , Report = require('../app/controllers/WarehouseSystem/Report')
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const CheckToken = require('../app/controllers/CheckToken');
@@ -87,7 +88,7 @@ importRouter.post('/import-warehouse', async (req, res) => { Import.ImportWareho
 
 app.use('/warehouse-system/import', importRouter);
 
-// import
+// export
 const exportRouter = express.Router();
 exportRouter.get('/get-data-command-export', async (req, res) => { Export.SendDataCommadExport(req, res); });
 exportRouter.post('/create-command-export', async (req, res) => { Export.CreateCommandExport(req, res); });
@@ -98,6 +99,13 @@ exportRouter.get('/get-data-before-export', async (req, res) => { Export.SendDat
 exportRouter.post('/export-warehouse', async (req, res) => { Export.ExportWarehouse(req, res); });
 
 app.use('/warehouse-system/export', exportRouter);
+
+// report
+const reportRouter = express.Router();
+reportRouter.get('/all', async (req, res) => { Report.SendDataReportAll(req, res); });
+reportRouter.get('/stock-label', async (req, res) => { Report.SendDataReportStock(req, res); });
+
+app.use('/warehouse-system/report', reportRouter);
 
 
 module.exports = app; 
