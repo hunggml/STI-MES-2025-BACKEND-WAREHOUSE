@@ -4,13 +4,6 @@ const CustomerModel = require('../../models/MasterData/Customer');
 const CheckToken = require('../CheckToken');
 const CustomerView = require('../../view/MasterData/Customer');
 
-// const GetDataCustomer = async () => {
-//     listCustomers = await CustomerModel.get({
-//         orderBy: "time_updated DESC",
-//         offset: 0,
-//     });
-// }
-
 const GetDataCustomer = async ( req ) => {
 
     let page        = req.page;

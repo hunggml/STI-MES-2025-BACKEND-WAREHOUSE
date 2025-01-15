@@ -28,25 +28,18 @@ const GetDataMachine = async ( req ) => {
         offset,
     });
 
-
     const totalRecords = await MachineView.count({
         where: whereConditions,
     });
-    // const totalPages = Math.ceil(totalRecords / limit_page);
 
     return {
         listMachines,
-        // pagination: {
-        //     currentPage: page,
-        //     totalPages,
-            totalRecords,
-        // },
+        totalRecords,
     };
 }
 
 const SendDataMachine = async (req, res) => {
     try {
-        // console.log(req.query);
         await CheckToken.checkToken(req,res);
         if(req.user)
         {

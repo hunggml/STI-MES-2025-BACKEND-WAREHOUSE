@@ -7,7 +7,6 @@ const ImportDetailView = require('../../view/WarehouseSystem/Import_Detail');
 
 const GetDataReportAll = async ( req ) => {
 
-    // console.log(req);
     let page        = req.page;
     let limit_page  = req.limit_page;
     let array_datas = [];
@@ -30,7 +29,6 @@ const GetDataReportAll = async ( req ) => {
     let warehouse   = req.warehouse_id.length > 0 ? req.warehouse_id.join(',') : 1;
     let from        = req.datepicker ? moment(req.datepicker[0]).format('YYYY-MM-DD') : moment().startOf('month').format('YYYY-MM-DD') + ' 0:0:01';
     let to          = req.datepicker ? moment(req.datepicker[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD') + ' 23:59:59';
-    // console.log(warehouse,from,to)
     listProductsReport = await ProductView.get({
         where: whereConditions,
         orderBy: "id asc",
@@ -39,37 +37,30 @@ const GetDataReportAll = async ( req ) => {
     });
 
     listProductsReport = await Promise.all(listProductsReport.map(async (v) => {
-        let test_procedure = await ProductModel.query(`CALL get_import_export_inventory(?, ?, ?, ?)`, [v.id, warehouse, from, to]);
+        let data_procedure = await ProductModel.query(`CALL get_import_export_inventory(?, ?, ?, ?)`, [v.id, warehouse, from, to]);
         return {
-            name        : v.name,
-            symbols     : v.symbols,
-            unit        : v.unit,
-            price       : parseFloat(v.price.toFixed(2)),
-            type        : v.type,
-            stock_first         : test_procedure[0][0].stock_first,
-            import              : test_procedure[0][0].import,
-            reimport            : test_procedure[0][0].reimport,
-            inventory_import    : test_procedure[0][0].inventory_import,
-            export              : test_procedure[0][0].export,
-            inventory_export    : test_procedure[0][0].inventory_export,
-            stock_end           : test_procedure[0][0].stock_end,
+            name                : v.name,
+            symbols             : v.symbols,
+            unit                : v.unit,
+            price               : parseFloat(v.price.toFixed(2)),
+            type                : v.type,
+            stock_first         : data_procedure[0][0].stock_first,
+            import              : data_procedure[0][0].import,
+            reimport            : data_procedure[0][0].reimport,
+            inventory_import    : data_procedure[0][0].inventory_import,
+            export              : data_procedure[0][0].export,
+            inventory_export    : data_procedure[0][0].inventory_export,
+            stock_end           : data_procedure[0][0].stock_end,
         }
-        // console.log(test_procedure);
     }))
-    // console.log(data);
 
     const totalRecords = await ProductView.count({
         where: whereConditions,
     });
-    // const totalPages = Math.ceil(totalRecords / limit_page);
 
     return {
         listProductsReport,
-        // pagination: {
-        //     currentPage: page,
-        //     totalPages,
-            totalRecords,
-        // },
+        totalRecords,
     };
 }
 
@@ -85,9 +76,6 @@ const SendDataReportAll = async (req, res) => {
     }
     catch(e) {
         console.log(e);
-        // return res.status(500).send({
-        //     message: 40
-        // });
     }
 }
 
@@ -134,9 +122,6 @@ const SendDataReportStock = async (req, res) => {
     }
     catch(e) {
         console.log(e);
-        // return res.status(500).send({
-        //     message: 40
-        // });
     }
 }
 

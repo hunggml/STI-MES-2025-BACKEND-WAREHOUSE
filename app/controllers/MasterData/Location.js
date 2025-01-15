@@ -62,15 +62,10 @@ const GetDataLocation = async ( req ) => {
     const totalRecords = await LocationView.count({
         where: whereConditions,
     });
-    // const totalPages = Math.ceil(totalRecords / limit_page);
 
     return {
         listLocations,
-        // pagination: {
-        //     currentPage: page,
-        //     totalPages,
-            totalRecords,
-        // },
+        totalRecords,
     };
 }
 
@@ -135,7 +130,6 @@ const SettingLocation = async (req, res) => {
                 ],
                 orderBy: "time_updated DESC"
             });
-
             let check_position_z_location = await LocationView.first({
                 where: [
                     {

@@ -14,7 +14,6 @@ const ProductView = require('../../view/MasterData/Product');
 // command export
 const GetDataCommandExport = async ( req ) => {
 
-    // console.log(req);
     let page        = req.page;
     let limit_page  = req.limit_page;
 
@@ -66,15 +65,10 @@ const GetDataCommandExport = async ( req ) => {
     const totalRecords = await CommandExportView.count({
         where: whereConditions,
     });
-    // const totalPages = Math.ceil(totalRecords / limit_page);
 
     return {
         listCommandExports,
-        // pagination: {
-        //     currentPage: page,
-        //     totalPages,
-            totalRecords,
-        // },
+        totalRecords,
     };
 }
 
@@ -86,7 +80,6 @@ const SendDataCommadExport = async (req, res) => {
             let datas = await GetDataCommandExport(req.query);
             return res.status(200).send(datas);
         }
-        
     }
     catch(e) {
         console.log(e)
@@ -104,16 +97,7 @@ const CreateCommandExport = async (req, res) => {
         if(user_id)
         {
             let check_symbols_command_export = await CommandExportView.first({
-                where: [
-                    {
-                        key: "symbols",
-                        value: request.symbols 
-                    },
-                    {
-                        key: "isdelete",
-                        value: 0 
-                    }
-                ],
+                where: [{ key: "symbols", value: request.symbols},{key: "isdelete",value: 0}],
                 orderBy: "time_updated DESC"
             });
             if(check_symbols_command_export)
@@ -294,13 +278,9 @@ const SendDistinctCommandExport = async (req,res) => {
             let datas = await DistinctDataCommandExport(req.query);
             return res.status(200).send(datas);
         }
-        
     }
     catch(e) {
         console.log(e);
-        // return res.status(500).send({
-        //     message: 40
-        // });
     }
 } 
 
@@ -366,15 +346,9 @@ const GetDataExportDetail = async ( req ) => {
     const totalRecords = await ExportDetailView.count({
         where: whereConditions,
     });
-    // const totalPages = Math.ceil(totalRecords / limit_page);
-
     return {
         listExportDetails,
-        // pagination: {
-        //     currentPage: page,
-        //     totalPages,
-            totalRecords,
-        // },
+        totalRecords,
     };
 }
 
@@ -440,7 +414,6 @@ const SendDistinctExportDetail = async (req,res) => {
 
 const GetDataBeforeExport = async ( req ) => {
 
-    // console.log(req);
     let listData            = [];
     let datas               = req.data_labels ? Object.values(req.data_labels) : [];
 
@@ -500,7 +473,7 @@ const SendDataBeforeExport = async (req, res) => {
 
 
 const ExportWarehouse = async (req, res) => {
-    // try {
+    try {
         await CheckToken.checkToken(req,res);
         let request             = req.body;
         let user_id             = req.user;
@@ -518,8 +491,6 @@ const ExportWarehouse = async (req, res) => {
                     }
                 ]
             });
-            // console.log(get_data_warehouse_import);
-            // check du lieu tung thang
             await Promise.all(request.data_exports.map(async (v) => {
                 let check_label = await ExportDetailView.first({
                     where: [
@@ -549,9 +520,7 @@ const ExportWarehouse = async (req, res) => {
                 {
                     if(check_label.location_export_symbols == v.location_symbols)
                     {
-                        // b1 : update xuat kho
                         await ExportDetailModel.query(`update export_detail set status = 2, quantity_exported=${v.quantity},user_updated=${user_id},time_updated="${time}" where id=${check_label.id}`);
-                        // b2 : update ton kho
                         await ImportDetailModel.query(`update import_detail set inventory= inventory - ${v.quantity},user_updated=${user_id},time_updated="${time}" where id=${check_label.id}`);
 
                         let data_import = {
@@ -603,12 +572,7 @@ const ExportWarehouse = async (req, res) => {
             ]);
 
             let get_id_command_improt = await CommandImportView.first({
-                where: [
-                    {
-                        key: "symbols",
-                        value: request.symbols 
-                    }
-                ],
+                where: [{key: "symbols",value: request.symbols }],
                 orderBy: "time_updated DESC"
             });
 
@@ -626,10 +590,10 @@ const ExportWarehouse = async (req, res) => {
                 data_labels : array_errors
             });            
         }
-    // }
-    // catch(e) {
-    //     console.log(e);
-    // }
+    }
+    catch(e) {
+        console.log(e);
+    }
 }
 
 module.exports = {

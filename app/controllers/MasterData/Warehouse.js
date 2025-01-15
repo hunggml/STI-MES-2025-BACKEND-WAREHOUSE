@@ -47,15 +47,10 @@ const GetDataWarehouse = async ( req ) => {
     const totalRecords = await WarehouseView.count({
         where: whereConditions,
     });
-    // const totalPages = Math.ceil(totalRecords / limit_page);
 
     return {
         listWarehouses,
-        // pagination: {
-        //     currentPage: page,
-        //     totalPages,
-            totalRecords,
-        // },
+        totalRecords,
     };
 }
 
@@ -76,11 +71,10 @@ const SendDataWarehouse = async (req, res) => {
 const SettingWarehouse = async (req, res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let request = req.body;
-        let user_id = req.user;
+        let request         = req.body;
+        let user_id         = req.user;
         var array_locations = [];
-        // console.log(request);
-        let time    = moment().format('YYYY-MM-DD HH:mm:ss');
+        let time            = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
         {
             let check_symbols_warehouse = await WarehouseView.first({

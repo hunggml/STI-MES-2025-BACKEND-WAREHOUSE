@@ -43,19 +43,13 @@ const GetDataProduct = async ( req ) => {
         offset,
     });
 
-
     const totalRecords = await ProductView.count({
         where: whereConditions,
     });
-    // const totalPages = Math.ceil(totalRecords / limit_page);
 
     return {
         listProducts,
-        // pagination: {
-        //     currentPage: page,
-        //     totalPages,
-            totalRecords,
-        // },
+        totalRecords,
     };
 }
 
@@ -78,7 +72,6 @@ const SettingProduct = async (req, res) => {
         await CheckToken.checkToken(req,res);
         let request = req.body;
         let user_id = req.user;
-        // console.log(request);
         let time = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
         {

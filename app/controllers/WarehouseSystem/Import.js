@@ -11,7 +11,6 @@ const LocationModel = require('../../models/MasterData/Location');
 // command import
 const GetDataCommandImport = async ( req ) => {
 
-    // console.log(req);
     let page        = req.page;
     let limit_page  = req.limit_page;
 
@@ -59,15 +58,10 @@ const GetDataCommandImport = async ( req ) => {
     const totalRecords = await CommandImportView.count({
         where: whereConditions,
     });
-    // const totalPages = Math.ceil(totalRecords / limit_page);
 
     return {
         listCommandImports,
-        // pagination: {
-        //     currentPage: page,
-        //     totalPages,
-            totalRecords,
-        // },
+        totalRecords,
     };
 }
 
@@ -198,9 +192,6 @@ const CreateCommandImport = async (req, res) => {
     }
     catch(e) {
         console.log(e);
-        // return res.status(500).send({
-        //     message: 40
-        // });
     }
 }
 
@@ -248,9 +239,6 @@ const SendDistinctCommandImport = async (req,res) => {
     }
     catch(e) {
         console.log(e);
-        // return res.status(500).send({
-        //     message: 40
-        // });
     }
 } 
 
@@ -313,16 +301,10 @@ const GetDataImportDetail = async ( req ) => {
     const totalRecords = await ImportDetailView.count({
         where: whereConditions,
     });
-    // const totalPages = Math.ceil(totalRecords / limit_page);
 
-    // console.log(listImportDetails);
     return {
         listImportDetails,
-        // pagination: {
-        //     currentPage: page,
-        //     totalPages,
-            totalRecords,
-        // },
+        totalRecords,
     };
 }
 
@@ -383,9 +365,6 @@ const SendDistinctImportDetail = async (req,res) => {
     }
     catch(e) {
         console.log(e);
-        // return res.status(500).send({
-        //     message: 40
-        // });
     }
 } 
 
@@ -465,12 +444,11 @@ async function processLocations(get_location, check_label,quantity_need) {
 
 const GetDataBeforeImport = async ( req ) => {
 
-    // console.log(req);
-    let datas = req.data_labels ? Object.values(req.data_labels) : [];
-    let listData = [];
+    let datas               = req.data_labels ? Object.values(req.data_labels) : [];
+    let listData            = [];
     let reset_quantity_need = 0;
-    let quantity_need = 0;
-    let location_id_used = [];
+    let quantity_need       = 0;
+    let location_id_used    = [];
     for(let i = 0; i < (datas.length) ; i++)
     {
         let check_label = await ImportDetailView.first({
@@ -512,13 +490,13 @@ const GetDataBeforeImport = async ( req ) => {
             ],
             orderBy: "time_updated DESC"
         });
+
         if(reset_quantity_need == 0)
         {
             quantity_need = check_label.quantity
         }
         const { result, reset_quantity_need_return } = await processLocations(get_location, check_label,quantity_need);
 
-        // console.log(reset_quantity_need_return,quantity_need)
         if(reset_quantity_need_return == 1)
         {
             quantity_need       += check_label.quantity;
@@ -528,10 +506,7 @@ const GetDataBeforeImport = async ( req ) => {
         {
             quantity_need       = check_label.quantity
             location_id_used.push(result.location_id)
-            // console.log(location_id_used,check_label.label);
         }
-        // console.log(reset_quantity_need_return);
-        // check_location_used = result.location_id
         
         listData.push(result);
 
@@ -551,9 +526,6 @@ const SendDataBeforeImport = async (req, res) => {
     }
     catch(e) {
         console.log(e);
-        // return res.status(500).send({
-        //     message: 40
-        // });
     }
 }
 
@@ -563,7 +535,6 @@ const SettingLedLocation = async (req, res) => {
         let request = req.body;
         let user_id = req.user;
         let time    = moment().format('YYYY-MM-DD HH:mm:ss');
-        // console.log(request)
         if(user_id)
         {
             request.listData.map(async (v) => {
@@ -592,20 +563,16 @@ const SettingLedLocation = async (req, res) => {
     }
     catch(e) {
         console.log(e);
-        // return res.status(500).send({
-        //     message: 40
-        // });
     }
 }
 
 const ImportWarehouse = async (req, res) => {
     try {
         await CheckToken.checkToken(req,res);
-        let request = req.body;
-        let user_id = req.user;
-        let time    = moment().format('YYYY-MM-DD HH:mm:ss');
-        // console.log(request);
-        var array_errors = [];
+        let request         = req.body;
+        let user_id         = req.user;
+        let time            = moment().format('YYYY-MM-DD HH:mm:ss');
+        var array_errors    = [];
         if(user_id)
         {
             await Promise.all(request.data_imports.map(async (v) => {
