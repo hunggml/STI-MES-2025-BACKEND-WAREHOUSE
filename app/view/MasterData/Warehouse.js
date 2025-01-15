@@ -2,23 +2,20 @@
 
 const { model } = require('../../../services/model');
 const apps = model({
-    table: 'master_bom_view',
+    table: 'master_warehouse_view',
     fillable: [
         'id',
-        'product_id',
-        'semi_product_id',
-        'quantity_use',
+        'name',
+        'symbols',
+        'note',
+        'position_x',
+        'position_z',
         'user_created',
         'user_created_id',
         'time_created',
         'user_updated',
         'user_updated_id',
         'time_updated',
-        'product_name',
-        'product_symbols',
-        'semi_product_name',
-        'semi_product_symbols',
-        'semi_product_type',
         'isdelete'
     ],
     timestamps: true,

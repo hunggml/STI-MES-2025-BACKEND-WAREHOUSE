@@ -2,17 +2,7 @@
 const moment = require('moment');
 const CustomerModel = require('../../models/MasterData/Customer');
 const CheckToken = require('../CheckToken');
-const env = require('dotenv').config();
-var db = env.parsed.DB_DATABASE;
-const ModelQuery = require("../../models/ModelQuery");
 const CustomerView = require('../../view/MasterData/Customer');
-
-// const GetDataCustomer = async () => {
-//     listCustomers = await CustomerModel.get({
-//         orderBy: "time_updated DESC",
-//         offset: 0,
-//     });
-// }
 
 const GetDataCustomer = async ( req ) => {
 
@@ -69,16 +59,15 @@ const GetDataCustomer = async ( req ) => {
 
 const SendDataCustomer = async (req, res) => {
     try {
-        // console.log(req.query);
-        // await CheckToken.checkToken(req,res);
-        let datas = await GetDataCustomer(req.query);
-        // console.log(datas);
-
-        return res.status(200).send(datas);
-        
+        await CheckToken.checkToken(req,res);
+        if(req.user)
+        {
+            let datas = await GetDataCustomer(req.query);
+            return res.status(200).send(datas);
+        }
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 }
 
@@ -123,17 +112,16 @@ const SettingCustomer = async (req, res) => {
             if(request.id)
             {
                 let data = {
-                    name    : request.name,
-                    symbols : request.symbols,
-                    tax     : request.tax,
-                    address : request.address,
-                    email   : request.email,
-                    note    : request.note,
-                    type    : request.type,
+                    name    : request.name ?? '',
+                    symbols : request.symbols ?? '',
+                    tax     : request.tax ?? '',
+                    address : request.address ?? '',
+                    email   : request.email ?? '',
+                    note    : request.note ?? '',
+                    type    : request.type ?? '',
                     user_updated: user_id,
                     time_updated: time,
                 };
-                // const check_cutomer = listCustomers.find(item => item.id == request.id);
                 const check_cutomer = await CustomerView.first({
                     where: [
                         {
@@ -146,9 +134,6 @@ const SettingCustomer = async (req, res) => {
 
                 if(check_cutomer)
                 {
-                    // const check_symbols_cutomer_update = listCustomers.find(item => item.symbols == request.symbols && item.id != request.id);
-                    // const check_email_cutomer_update   = listCustomers.find(item => item.email == request.email && item.id != request.id);
-                    // const check_tax_cutomer_update     = listCustomers.find(item => item.tax == request.tax && item.id != request.id);
                     
                     // const check_symbols_cutomer_update = await CustomerView.first({
                     //     where: [
@@ -218,10 +203,6 @@ const SettingCustomer = async (req, res) => {
             }
             else
             {
-                // const check_symbols_cutomer = listCustomers.find(item => item.symbols == request.symbols);
-                // const check_email_cutomer   = listCustomers.find(item => item.email == request.email);
-                // const check_tax_cutomer     = listCustomers.find(item => item.tax == request.tax);
-    
                 // const check_symbols_cutomer = await CustomerView.first({
                 //     where: [
                 //         {
@@ -273,13 +254,13 @@ const SettingCustomer = async (req, res) => {
 
                 await CustomerModel.insert([
                     { 
-                        name    : request.name,
-                        symbols : request.symbols,
-                        tax     : request.tax,
-                        address : request.address,
-                        email   : request.email,
-                        note    : request.note,
-                        type    : request.type,
+                        name    : request.name ?? '',
+                        symbols : request.symbols ?? '',
+                        tax     : request.tax ?? '',
+                        address : request.address ?? '',
+                        email   : request.email ?? '',
+                        note    : request.note ?? '',
+                        type    : request.type ?? '',
                         user_created: user_id,
                         user_updated: user_id,
                         time_created: time,
@@ -305,12 +286,10 @@ const LockCustomer = async (req, res) => {
         let request = req.body;
         let user_id = req.user;
         let time = moment().format('YYYY-MM-DD HH:mm:ss');
-    // console.log(user_id);
         if(user_id)
         {
             if(request.id)
             {
-                // const check_cutomer = listCustomers.find(item => item.id == request.id);
                 let check_cutomer = await CustomerView.first({
                     where: [
                         {
@@ -320,7 +299,6 @@ const LockCustomer = async (req, res) => {
                     ],
                     orderBy: "time_updated DESC"
                 });
-                // console.log(check_cutomer.isdelete);
                 if(check_cutomer)
                 {
                     let data = {
@@ -385,16 +363,16 @@ const DistinctData = async (req) => {
 
 const SendDistinctCustomer = async (req,res) => {
     try {
-        // console.log(req.query);
         await CheckToken.checkToken(req,res);
-        let datas = await DistinctData(req.query);
-        // console.log(datas);
-
-        return res.status(200).send(datas);
+        if(req.user)
+        {
+            let datas = await DistinctData(req.query);
+            return res.status(200).send(datas);
+        }
         
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 } 
 

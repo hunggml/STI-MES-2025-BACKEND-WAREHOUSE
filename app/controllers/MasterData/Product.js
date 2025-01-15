@@ -43,34 +43,27 @@ const GetDataProduct = async ( req ) => {
         offset,
     });
 
-
     const totalRecords = await ProductView.count({
         where: whereConditions,
     });
-    // const totalPages = Math.ceil(totalRecords / limit_page);
 
     return {
         listProducts,
-        // pagination: {
-        //     currentPage: page,
-        //     totalPages,
-            totalRecords,
-        // },
+        totalRecords,
     };
 }
 
 const SendDataProduct = async (req, res) => {
     try {
-        // console.log(req.query);
         await CheckToken.checkToken(req,res);
-        let datas = await GetDataProduct(req.query);
-        // console.log(datas);
-
-        return res.status(200).send(datas);
-        
+        if(req.user)
+        {
+            let datas = await GetDataProduct(req.query);
+            return res.status(200).send(datas);   
+        }
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 }
 
@@ -95,13 +88,14 @@ const SettingProduct = async (req, res) => {
             if(request.id)
             {
                 let data = {
-                    name        : request.name,
-                    symbols     : request.symbols,
-                    unit        : request.unit,
-                    stock_min   : request.stock_min,
-                    stock_max   : request.stock_max,
-                    price       : request.price,
-                    note        : request.note,
+                    name        : request.name ?? '',
+                    symbols     : request.symbols ?? '',
+                    unit        : request.unit ?? '',
+                    stock_min   : request.stock_min ?? '',
+                    stock_max   : request.stock_max ?? '',
+                    price       : request.price ?? '',
+                    note        : request.note ?? '',
+                    type        : request.type ?? '',
                     user_updated: user_id,
                     time_updated: time,
                 };
@@ -121,7 +115,7 @@ const SettingProduct = async (req, res) => {
                     if(check_symbols_product && check_symbols_product.id != request.id)
                     {
                         return res.status(500).send({
-                            message: 16 // symbols exist 
+                            message: 16
                         });
                     }
                     
@@ -131,13 +125,13 @@ const SettingProduct = async (req, res) => {
                     );
     
                     return res.status(200).send({
-                        message: 17 // setting Product success
+                        message: 17
                     });
                 }
                 else
                 {
                     return res.status(500).send({
-                        message: 18 // Product is not pass
+                        message: 18
                     });
                 }
             }
@@ -147,19 +141,20 @@ const SettingProduct = async (req, res) => {
                 if(check_symbols_product)
                 {
                     return res.status(500).send({
-                        message: 16 // symbols exist 
+                        message: 16
                     });
                 }
 
                 await ProductModel.insert([
                     { 
-                        name        : request.name,
-                        symbols     : request.symbols,
-                        unit        : request.unit,
-                        stock_min   : request.stock_min,
-                        stock_max   : request.stock_max,
-                        price       : request.price,
-                        note        : request.note,
+                        name        : request.name ?? '',
+                        symbols     : request.symbols ?? '',
+                        unit        : request.unit ?? '',
+                        stock_min   : request.stock_min ?? '',
+                        stock_max   : request.stock_max ?? '',
+                        price       : request.price ?? '',
+                        note        : request.note ?? '',
+                        type        : request.type ?? '',
                         user_created: user_id,
                         user_updated: user_id,
                         time_created: time,
@@ -169,7 +164,7 @@ const SettingProduct = async (req, res) => {
                 ]);
 
                 return res.status(200).send({
-                    message: 17 // setting Product success
+                    message: 17
                 });
             }
         }
@@ -185,12 +180,10 @@ const LockProduct = async (req, res) => {
         let request = req.body;
         let user_id = req.user;
         let time = moment().format('YYYY-MM-DD HH:mm:ss');
-    // console.log(user_id);
         if(user_id)
         {
             if(request.id)
             {
-                // const check_Product = listProducts.find(item => item.id == request.id);
                 let check_Product = await ProductView.first({
                     where: [
                         {
@@ -200,7 +193,6 @@ const LockProduct = async (req, res) => {
                     ],
                     orderBy: "time_updated DESC"
                 });
-                // console.log(check_Product.isdelete);
                 if(check_Product)
                 {
                     let data = {
@@ -220,7 +212,7 @@ const LockProduct = async (req, res) => {
                 else
                 {
                     return res.status(500).send({
-                        message: 18 // Product isnot pass
+                        message: 18
                     });
                 }
             }
@@ -265,16 +257,15 @@ const DistinctData = async (req) => {
 
 const SendDistinctProduct = async (req,res) => {
     try {
-        // console.log(req.query);
         await CheckToken.checkToken(req,res);
-        let datas = await DistinctData(req.query);
-        // console.log(datas);
-
-        return res.status(200).send(datas);
-        
+        if(req.user)
+        {
+            let datas = await DistinctData(req.query);
+            return res.status(200).send(datas);
+        }
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 } 
 
@@ -282,37 +273,56 @@ const GetDataBom = async ( req,res ) => {
     try {
         await CheckToken.checkToken(req,res);
 
-        const whereConditions = [
-            {
-                key: "product_id",
-                value: req.query.product_id 
-            },
-            {
-                key: "isdelete",
-                value: 0
-            },
+        if(req.user)
+        {
+            let page        = req.page;
+            let limit_page  = 10;
+    
+            const offset = (page - 1) * limit_page;
             
-        ];
-
-        let datas = await BomView.get({
-            where: whereConditions
-        });
-
-        return res.status(200).send(datas);
+            const whereConditions = [
+                {
+                    key: "product_id",
+                    value: req.query.product_id 
+                },
+                {
+                    key: "isdelete",
+                    value: 0
+                },
+                
+            ];
+    
+            let listBom = await BomView.get({
+                where: whereConditions,
+                orderBy: "time_updated DESC",
+                limit: limit_page,
+                offset,
+            });
+    
+            const totalRecords = await BomView.count({
+                where: whereConditions,
+            });
+    
+            let datas = {
+                listBom,
+                totalRecords
+            }
+    
+            return res.status(200).send(datas);
+        }
         
     }
-    catch {
-
+    catch(e) {
+        console.log(e);
     }
 }
 
 const SettingBom = async ( req,res ) => {
-    // try {
+    try {
         await CheckToken.checkToken(req,res);
 
         let request = req.body;
 
-        // console.log(request);
         let user_id = req.user;
         let time = moment().format('YYYY-MM-DD HH:mm:ss');
         if(user_id)
@@ -339,14 +349,13 @@ const SettingBom = async ( req,res ) => {
                     orderBy: "time_updated DESC"
                 }); 
 
-                // // khong co data tu truoc thi them moi tat c
                 if(get_data_bom_of_product.length == 0)
                 {
                     let data_semi = request.semi_products.map(function(v){
                         return { 
-                            product_id      : request.product_id,
-                            semi_product    : v.id,
-                            quantity_use    : v.quantity_use,
+                            product_id      : request.product_id ?? '',
+                            semi_product_id    : v.semi_product_id ?? '',
+                            quantity_use    : v.quantity_use ?? '',
                             user_created    : user_id,
                             time_created    : time,
                             user_updated    : user_id,
@@ -361,14 +370,11 @@ const SettingBom = async ( req,res ) => {
                     }
 
                     return res.status(200).send({
-                        message: 17 // setting Product success
+                        message: 17
                     });                
                 }
-                // // co data tu truoc thi so sanh
                 else
                 {
-                    // console.log(get_data_bom_of_product);
-                    // update isdelete = 1 het xong update lai theo data moi 
                     await BomModel.update(
                         {
                            isdelete : 1
@@ -378,9 +384,9 @@ const SettingBom = async ( req,res ) => {
 
                     let data_semi = request.semi_products.map(function(v){
                         return { 
-                                product_id      : request.product_id,
-                                semi_product    : v.id,
-                                quantity_use    : v.quantity_use,
+                                product_id      : request.product_id ?? '',
+                                semi_product_id    : v.semi_product_id ?? '',
+                                quantity_use    : v.quantity_use ?? '',
                                 user_created    : user_id,
                                 user_updated    : user_id,
                                 time_created    : time,
@@ -395,17 +401,17 @@ const SettingBom = async ( req,res ) => {
                     }
 
                     return res.status(200).send({
-                        message: 17 // setting Product success
+                        message: 17
                     });                       
                 }
             }
 
         }
         
-    // }
-    // catch {
-
-    // }
+    }
+    catch(e) {
+        console.log(e);
+    }
 }
 
 module.exports = {

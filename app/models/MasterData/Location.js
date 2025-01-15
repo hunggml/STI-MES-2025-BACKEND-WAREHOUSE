@@ -2,11 +2,21 @@
 
 const { model } = require('../../../services/model');
 const apps = model({
-    table: 'master_bom',
+    table: 'master_location',
     fillable: [
-        'product_id',
-        'semi_product_id',
-        'quantity_use',
+        'name',
+        'symbols',
+        'stock_min',
+        'stock_max',
+        'note',
+        'warehouse_id',
+        'position_x',
+        'position_y',
+        'position_z',
+        'r',
+        'g',
+        'b',
+        'status_led',
         'user_created',
         'time_created',
         'user_updated',

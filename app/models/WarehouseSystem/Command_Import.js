@@ -2,11 +2,12 @@
 
 const { model } = require('../../../services/model');
 const apps = model({
-    table: 'master_bom',
+    table: 'command_import',
     fillable: [
-        'product_id',
-        'semi_product_id',
-        'quantity_use',
+        'name',
+        'symbols',
+        'warehouse_import_id',
+        'note',
         'user_created',
         'time_created',
         'user_updated',
